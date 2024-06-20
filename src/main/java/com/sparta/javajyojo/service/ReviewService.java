@@ -45,14 +45,14 @@ public class ReviewService {
     }
 
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found with id " + id));
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id " + orderId));
     }
 
-    public Review getReviewById(Long id){
-        return reviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("review not found with id " + id));
+    public Review getReviewById(Long reviewId){
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("review not found with id " + reviewId));
     }
 
 
