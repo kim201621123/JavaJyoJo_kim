@@ -1,10 +1,13 @@
 package com.sparta.javajyojo.controller;
 
 import com.sparta.javajyojo.dto.OrderRequestDto;
+import com.sparta.javajyojo.dto.OrderResponseDto;
 import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,10 +17,13 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    
+
     // 주문 생성
     @PostMapping
-    public Order createOrder(@RequestBody OrderRequestDto orderRequestDto) {
-        return orderService.createOrder(orderRequestDto);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, @RequestParam Long userId) {
+        OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
+        return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
     }
 
     // 주문 목록 조회

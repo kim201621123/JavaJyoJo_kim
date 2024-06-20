@@ -1,17 +1,21 @@
 package com.sparta.javajyojo.service;
 
 import com.sparta.javajyojo.dto.OrderRequestDto;
-import com.sparta.javajyojo.entity.Menu;
+import com.sparta.javajyojo.dto.OrderResponseDto;
 import com.sparta.javajyojo.entity.Order;
-import com.sparta.javajyojo.entity.OrderDetail;
+import com.sparta.javajyojo.entity.User;
+import com.sparta.javajyojo.enums.OrderStatus;
 import com.sparta.javajyojo.repository.MenuRepository;
 import com.sparta.javajyojo.repository.OrderDetailRepository;
 import com.sparta.javajyojo.repository.OrderRepository;
+import com.sparta.javajyojo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +24,23 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuRepository menuRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final UserRepository userRepository;  // 사용자 정보를 조회할 UserRepository
 
 
     // 주문 생성
-    public Order createOrder(OrderRequestDto orderRequestDto) {
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
         Order order = new Order();
-        order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
         order.setAddress(orderRequestDto.getAddress());
-        order.setOrderStatus("ORDERED");
+        order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
+        order.setOrderStatus(OrderStatus.NEW);
+        order.setUser(user); // 유저 정보를 설정
 
-        Order savedOrder = orderRepository.save(order);
+        orderRepository.save(order);
 
-        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(savedOrder);
-            orderDetail.setAmount(detailDto.getAmount());
-            Menu menu = menuRepository.findByMenuId(detailDto.getMenuId());
-            orderDetail.setMenu(menu);
-            orderDetailRepository.save(orderDetail);
-        }
-        return savedOrder;
+        return new OrderResponseDto(order);
     }
 
     // 주문 목록 조회
@@ -58,9 +59,11 @@ public class OrderService {
 
         order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
         order.setAddress(orderRequestDto.getAddress());
-        order.setOrderStatus("UPDATED");
+        order.setOrderStatus(OrderStatus.UPDATED); // OrderStatus 열거형 사용
+
         return orderRepository.save(order);
     }
+
 
     public void deleteOrder(Long orderId) {
         // 주문 ID로 주문 엔티티 조회

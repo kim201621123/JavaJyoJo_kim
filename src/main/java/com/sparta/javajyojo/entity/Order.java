@@ -1,10 +1,12 @@
 package com.sparta.javajyojo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.javajyojo.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class) // JPA Auditing 활성화
 public class Order extends Timestamped {
 
     @Id
@@ -31,6 +34,10 @@ public class Order extends Timestamped {
     @Column(nullable = false)
     private String deliveryRequest;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus orderStatus;
+
     private String address;
-    private String orderStatus;
+
 }
