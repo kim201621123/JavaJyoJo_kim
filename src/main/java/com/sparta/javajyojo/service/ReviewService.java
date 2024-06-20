@@ -37,6 +37,12 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
+    public ReviewResponseDto deleteReview(Long reviewId) {
+        Review review = getReviewById(reviewId);
+        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(review);
+        reviewRepository.delete(review);
+        return reviewResponseDto;
+    }
 
 
     public Order getOrderById(Long id) {
@@ -49,9 +55,12 @@ public class ReviewService {
                 .orElseThrow(() -> new IllegalArgumentException("review not found with id " + id));
     }
 
+
+
     public List<ReviewResponseDto> getAllReviews() {
         return reviewRepository.findAllByOrderByCreatedAtDesc()
                 .stream().map(ReviewResponseDto::new).toList();
     }
+
 
 }

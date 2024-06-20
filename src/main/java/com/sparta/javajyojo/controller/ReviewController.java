@@ -43,5 +43,10 @@ public class ReviewController {
         return reviewService.updateReview(reviewRequestDto, review);
     }
 
+    @DeleteMapping("/{reviewId}")
+    public ReviewResponseDto deleteReview(@PathVariable Long reviewId){
+        return reviewService.deleteReview(reviewId);
+    }
+
 
 }
