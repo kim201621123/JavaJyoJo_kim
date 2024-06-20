@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 public class CustomException extends RuntimeException {
 
-    private String result;
-    private ErrorType errorType;
+    private final String result;
+    private final ErrorType errorType;
 
     public CustomException(ErrorType errorType) {
         this.result = "ERROR";

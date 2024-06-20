@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 public class ExceptionDto {
 
-    private String result;
+    private final String result;
     private ErrorType errorType;
-    private String message;
+    private final String message;
 
     public ExceptionDto(ErrorType errorType) {
         this.result = "ERROR";
