@@ -3,19 +3,19 @@ package com.sparta.javajyojo.service;
 import com.sparta.javajyojo.dto.OrderRequestDto;
 import com.sparta.javajyojo.dto.OrderResponseDto;
 import com.sparta.javajyojo.entity.Order;
+import com.sparta.javajyojo.entity.OrderDetail;
 import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.OrderStatus;
 import com.sparta.javajyojo.repository.MenuRepository;
 import com.sparta.javajyojo.repository.OrderDetailRepository;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +24,48 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuRepository menuRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final UserRepository userRepository;  // 사용자 정보를 조회할 UserRepository
+    private final UserRepository userRepository;
 
-
-    // 주문 생성
+    @Transactional
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, Long userId) {
+        // 유저 정보 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID입니다."));
 
+        // 총 주문 금액 계산
+        int totalPrice = 0;
+        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
+            // 메뉴 ID로 메뉴의 가격 조회
+            int menuPrice = menuRepository.findById(detailDto.getMenuId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 메뉴 ID입니다."))
+                    .getPrice();
+            // 메뉴 가격 * 수량을 총 주문 금액에 더함
+            totalPrice += menuPrice * detailDto.getAmount();
+        }
+
+        // 주문 엔티티 생성 및 저장
         Order order = new Order();
         order.setAddress(orderRequestDto.getAddress());
         order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
         order.setOrderStatus(OrderStatus.NEW);
-        order.setUser(user); // 유저 정보를 설정
+        order.setTotalPrice(totalPrice); // 총 주문 금액 저장
+        order.setUser(user);
 
         orderRepository.save(order);
 
+        // 주문 상세 엔티티 생성 및 저장
+        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+            orderDetail.setMenu(menuRepository.findById(detailDto.getMenuId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 메뉴 ID입니다.")));
+            orderDetail.setAmount(detailDto.getAmount());
+            orderDetailRepository.save(orderDetail);
+        }
+
         return new OrderResponseDto(order);
     }
+
 
     // 주문 목록 조회
     public Page<Order> getOrders(int page, int size) {
