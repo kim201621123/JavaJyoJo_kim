@@ -8,7 +8,13 @@ import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +30,28 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
+    @Transactional
+    public ReviewResponseDto updateReview(ReviewRequestDto reviewRequestDto,
+                                          Review review){
+        review.update(reviewRequestDto);
+        return new ReviewResponseDto(review);
+    }
+
 
 
     public Order getOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id " + id));
     }
+
+    public Review getReviewById(Long id){
+        return reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("review not found with id " + id));
+    }
+
+    public List<ReviewResponseDto> getAllReviews() {
+        return reviewRepository.findAllByOrderByCreatedAtDesc()
+                .stream().map(ReviewResponseDto::new).toList();
+    }
+
 }
