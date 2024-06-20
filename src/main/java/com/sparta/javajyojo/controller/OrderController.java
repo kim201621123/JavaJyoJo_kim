@@ -17,36 +17,38 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    
-
     // 주문 생성
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, @RequestParam Long userId) {
         OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userId);
-        return new ResponseEntity<>(orderResponseDto, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
     }
 
     // 주문 목록 조회
     @GetMapping
-    public Page<Order> getOrders(@RequestParam int page, @RequestParam int size) {
-        return orderService.getOrders(page, size);
+    public ResponseEntity<Page<Order>> getOrders(@RequestParam int page, @RequestParam int size) {
+        Page<Order> orders = orderService.getOrders(page, size);
+        return ResponseEntity.ok().body(orders);
     }
 
     // 주문 조회
     @GetMapping("/{orderId}")
-    public Order getOrder(@PathVariable Long orderId) {
-        return orderService.getOrder(orderId);
+    public ResponseEntity<Order> getOrder(@PathVariable Long orderId) {
+        Order order = orderService.getOrder(orderId);
+        return ResponseEntity.ok().body(order);
     }
 
     // 주문 수정
     @PutMapping("/{orderId}")
-    public Order updateOrder(@PathVariable Long orderId, @RequestBody OrderRequestDto orderRequestDto) {
-        return orderService.updateOrder(orderId, orderRequestDto);
+    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId, @RequestBody OrderRequestDto orderRequestDto) {
+        Order updatedOrder = orderService.updateOrder(orderId, orderRequestDto);
+        return ResponseEntity.ok().body(updatedOrder);
     }
 
     // 주문 삭제
     @DeleteMapping("/{orderId}")
-    public void deleteOrder(@PathVariable Long orderId) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
     }
 }
