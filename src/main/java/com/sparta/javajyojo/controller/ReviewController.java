@@ -24,7 +24,7 @@ public class ReviewController {
     public final ReviewRepository reviewRepository;
     public final OrderRepository orderRepository;
 
-    @PostMapping("/{orderId}")
+    @PostMapping("/orders/{orderId}")
     public ReviewResponseDto createReview(@RequestBody ReviewRequestDto reviewRequestDto,
                                           @PathVariable Long orderId){
         Order order = reviewService.getOrderById(orderId);
@@ -34,6 +34,11 @@ public class ReviewController {
     @GetMapping("/getAllReviews")
     public List<ReviewResponseDto> getAllReviews() {
         return reviewService.getAllReviews();
+    }
+
+    @GetMapping("/{reviewId}")
+    public ReviewResponseDto getReview(@PathVariable Long reviewId){
+        return new ReviewResponseDto(reviewService.getReviewById(reviewId));
     }
 
     @PutMapping("/{reviewId}")
