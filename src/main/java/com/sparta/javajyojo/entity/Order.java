@@ -20,6 +20,10 @@ public class Order extends Timestamped {
     @Column(name = "order_id")
     private Long orderId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonIgnore // 순환 참조 방지를 위해 추가
     private List<OrderDetail> orderDetails;
