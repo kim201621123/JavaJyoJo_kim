@@ -1,9 +1,13 @@
 package com.sparta.javajyojo.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -84,10 +88,13 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    // 사용자에게서 토큰 사져오기.
+    // 사용자에게서 토큰 가져오기.
+    public String getAccessTokenFromRequest(HttpServletRequest request){
+        return getTokenFromRequest(request,ACCESS_TOKEN_HEADER);
+    }
 
-    //HttpServletRequest 에서 토큰 가져오기
-    public String getAccessTokenFromRequest(HttpServletRequest request, String headerName){
+    //HttpServletRequest 에서 토큰있는지 확인
+    public String getTokenFromRequest(HttpServletRequest request, String headerName){
         String token = request.getHeader(headerName);
         if(token != null && !token.isEmpty()){
             return token;
