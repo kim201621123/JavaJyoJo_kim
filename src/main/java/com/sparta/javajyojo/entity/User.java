@@ -26,9 +26,6 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection
-    private List<String> pwUsdLst3Tms = new ArrayList<>();
-
     private String name;
 
     private String intro;
@@ -45,8 +42,6 @@ public class User extends Timestamped {
         this.name = name;
         this.intro = intro;
         this.role = UserRoleEnum.valueOf(role);
-        this.pwUsdLst3Tms = new ArrayList<>();
-        this.pwUsdLst3Tms.add(password);
     }
 
     public void logOut() {
@@ -54,15 +49,7 @@ public class User extends Timestamped {
     }
 
     public void update(Optional<String> newPassword, Optional<String> name, Optional<String> intro) {
-        if (newPassword.isPresent()) {
-            this.password = newPassword.get();
-
-            this.pwUsdLst3Tms.add(this.password);
-            if (pwUsdLst3Tms.size() > 3) {
-                pwUsdLst3Tms.remove(0);
-            }
-        }
-
+        this.password = newPassword.orElse(this.password);
         this.name = name.orElse(this.name);
         this.intro = intro.orElse(this.intro);
     }
