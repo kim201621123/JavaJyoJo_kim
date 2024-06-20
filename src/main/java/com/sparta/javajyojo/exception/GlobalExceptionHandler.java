@@ -19,9 +19,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleException(MethodArgumentNotValidException e){
-        e.printStackTrace();
-        BindingResult bindingResult = e.getBindingResult();
+    public ResponseEntity<?> handleException(MethodArgumentNotValidException ex){
+        ex.printStackTrace();
+        BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();
 
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
