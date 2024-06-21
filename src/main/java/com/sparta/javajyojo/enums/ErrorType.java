@@ -17,6 +17,10 @@ public enum ErrorType {
     PASSWORD_SAME(HttpStatus.UNAUTHORIZED, "현재 비밀번호와 동일한 비밀번호로 변경할 수 없습니다."),
     PASSWORD_RECENTLY_USED(HttpStatus.LOCKED, "최근에 사용한 비밀번호는 사용할 수 없습니다."),
 
+    // ORDER
+    INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴 ID입니다."),
+    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
+
     // REVIEW
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
     NO_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
