@@ -36,12 +36,16 @@ public class User extends Timestamped {
     private String refreshToken;
 
     @Builder
-    public User(String username, String password, String name, String intro, String role) {
+    public User(String username, String password, String name, String intro, UserRoleEnum role) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.intro = intro;
-        this.role = UserRoleEnum.valueOf(role);
+        this.role = role;
+    }
+
+    public void signOut() {
+        this.role = UserRoleEnum.WITHOUT;
     }
 
     public void logOut() {

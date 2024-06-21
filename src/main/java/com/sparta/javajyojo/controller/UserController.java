@@ -26,26 +26,66 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.signUp(requestDto));
     }
 
-//    @DeleteMapping("/log-out")
-    @DeleteMapping("/log-out/{userId}")
-    public ResponseEntity<String> logOut(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            @PathVariable Long userId) {
+    @DeleteMapping("/sign-out")
+    public ResponseEntity<String> signOut(
+            @RequestParam Long userId) {
 
-//        userService.logOut(userDetails.getUser().getId());
+        userService.signOut(userId);
+        return ResponseEntity.ok().body("회원 탈퇴에 성공했습니다.");
+    }
+
+//    @DeleteMapping("/sign-out")
+//    public ResponseEntity<String> signOut(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//
+//        userService.signOut(userDetails.getUser().getId());
+//        return ResponseEntity.ok().body("회원 탈퇴에 성공했습니다.");
+//    }
+
+    @DeleteMapping("/log-out")
+    public ResponseEntity<String> logOut(
+            @RequestParam Long userId) {
+
         userService.logOut(userId);
         return ResponseEntity.ok().body("로그아웃 성공하셨습니다");
     }
 
-//    @PatchMapping
-    @PatchMapping("/{userId}")
-    public ResponseEntity<ProfileResponseDto> profileUpdate(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long userId,
-            @RequestBody ProfileRequestDto requestDto) {
+//    @DeleteMapping("/log-out")
+//    public ResponseEntity<String> logOut(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//
+//        userService.logOut(userDetails.getUser().getId());
+//        return ResponseEntity.ok().body("로그아웃 성공하셨습니다");
+//    }
 
-//        return ResponseEntity.ok().body(userService.update(userDetails.getUser().getId(), requestDto));
+    @GetMapping
+    public ResponseEntity<ProfileResponseDto> getProfile(
+            @RequestParam Long userId) {
+
+        return ResponseEntity.ok().body(userService.getProfile(userId));
+    }
+
+//    @GetMapping
+//    public ResponseEntity<ProfileResponseDto> getProfile(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//
+//        return ResponseEntity.ok().body(userService.getProfile(userDetails.getUser().getId()));
+//    }
+
+    @PatchMapping
+    public ResponseEntity<ProfileResponseDto> profileUpdate(
+            @RequestParam Long userId,
+            @Valid @RequestBody ProfileRequestDto requestDto) {
+
         return ResponseEntity.ok().body(userService.update(userId, requestDto));
     }
+
+//    @PatchMapping
+//    public ResponseEntity<ProfileResponseDto> profileUpdate(
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @Valid @RequestBody ProfileRequestDto requestDto) {
+//
+//        return ResponseEntity.ok().body(userService.update(userDetails.getUser().getId(), requestDto));
+//    }
 
 }
