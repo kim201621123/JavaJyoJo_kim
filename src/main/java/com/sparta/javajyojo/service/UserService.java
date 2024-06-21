@@ -119,7 +119,6 @@ public class UserService {
         return new ProfileResponseDto(user);
     }
 
-
     @Transactional
     public void updateRefreshToken(Long id, String refreshToken) {
         User user = findById(id);
@@ -128,11 +127,9 @@ public class UserService {
     }
 
     public User findById(Long id) {
-
-
-            return userRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorType.NOT_FOUND_USER)
-            );
-        }
-
+        return userRepository.findById(id).orElseThrow(
+            () -> new CustomException(ErrorType.NOT_FOUND_USER)
+        );
     }
+
+}
