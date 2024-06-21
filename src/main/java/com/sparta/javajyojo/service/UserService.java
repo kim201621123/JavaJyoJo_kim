@@ -51,11 +51,11 @@ public class UserService {
         }
 
         User user = new User(
-                username,
-                password,
-                requestDto.getName(),
-                requestDto.getIntro(),
-                role
+            username,
+            password,
+            requestDto.getName(),
+            requestDto.getIntro(),
+            role
         );
         userRepository.save(user);
 
@@ -99,7 +99,7 @@ public class UserService {
             // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
             List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
             boolean isInPreviousPasswords = recentPasswords.stream()
-                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
+                .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
             if (isInPreviousPasswords) {
                 throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
             }
@@ -111,13 +111,14 @@ public class UserService {
         }
 
         user.update(
-                Optional.ofNullable(newEncodePassword),
-                Optional.ofNullable(requestDto.getName()),
-                Optional.ofNullable(requestDto.getIntro())
+            Optional.ofNullable(newEncodePassword),
+            Optional.ofNullable(requestDto.getName()),
+            Optional.ofNullable(requestDto.getIntro())
         );
 
         return new ProfileResponseDto(user);
     }
+
 
     @Transactional
     public void updateRefreshToken(Long id, String refreshToken) {
@@ -127,9 +128,11 @@ public class UserService {
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorType.NOT_FOUND_USER)
-        );
-    }
 
-}
+
+            return userRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorType.NOT_FOUND_USER)
+            );
+        }
+
+    }
