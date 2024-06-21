@@ -54,4 +54,6 @@ public class User extends Timestamped {
         this.intro = intro.orElse(this.intro);
     }
 
+    public void updateToken(String refreshToken){ this.refreshToken = refreshToken; }
+
 }
