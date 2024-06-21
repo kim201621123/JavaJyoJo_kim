@@ -9,14 +9,17 @@ import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
 import com.sparta.javajyojo.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -24,31 +27,25 @@ public class ReviewController {
     public final ReviewRepository reviewRepository;
     public final OrderRepository orderRepository;
 
-    @PostMapping("/orders/{orderId}")
-    public ReviewResponseDto createReview(@RequestBody ReviewRequestDto reviewRequestDto,
-                                          @PathVariable Long orderId){
+    @PostMapping("/{orderId}/reviews")
+    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody ReviewRequestDto reviewRequestDto,
+                                                          @PathVariable Long orderId){
         Order order = reviewService.getOrderById(orderId);
-        return reviewService.createReview(reviewRequestDto, order);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(reviewRequestDto, order));
     }
 
-    @GetMapping("/getAllReviews")
-    public List<ReviewResponseDto> getAllReviews() {
-        return reviewService.getAllReviews();
-    }
-
-    @GetMapping("/{reviewId}")
+    @GetMapping("/reviews/{reviewId}")
     public ReviewResponseDto getReview(@PathVariable Long reviewId){
         return new ReviewResponseDto(reviewService.getReviewById(reviewId));
     }
 
-    @PutMapping("/{reviewId}")
+    @PutMapping("/reviews/{reviewId}")
     public ReviewResponseDto updateReview(@RequestBody ReviewRequestDto reviewRequestDto,
-                                          @PathVariable Long reviewId){ //추후 userDetailsImpl로 받아오면 검증
-        Review review = reviewService.getReviewById(reviewId);
-        return reviewService.updateReview(reviewRequestDto, review);
+                                          @PathVariable Long reviewId){ // 추후 userDetailsImpl로 받아오면 검증
+        return reviewService.updateReview(reviewRequestDto, reviewId);
     }
 
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public ReviewResponseDto deleteReview(@PathVariable Long reviewId){
         return reviewService.deleteReview(reviewId);
     }

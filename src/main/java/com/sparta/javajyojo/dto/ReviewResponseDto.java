@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReviewResponseDto {
-    private Long id;
-    private Long orderId;
-    private Long userId;
-    private String review;
-    private Long rating;
+    private final Long id;
+    private final Long orderId;
+    private final Long userId;
+    private final String review;
+    private final Long rating;
 
     public ReviewResponseDto(Review review) {
         this.id = review.getReviewId();
