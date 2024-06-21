@@ -55,14 +55,14 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // 토큰 생성 Access, Refresh Token (UserRoleEnum 추가해야함)
+    // 토큰 생성 Access, Refresh Token
     public String createToken(String username, UserRoleEnum role, Long expires, String tokenType) {
         // 생성시간
         Date date = new Date();
 
         return BEARER_PREFIX +
             Jwts.builder().setSubject(username)
-                .claim(ACCESS_TOKEN_HEADER, tokenType)
+                .claim(AUTHORIZATION_HEADER, tokenType)
                 .claim("UserRole", role)
                 .setExpiration(new Date(date.getTime() + expires))
                 .setIssuedAt(date)
@@ -92,7 +92,7 @@ public class JwtUtil {
 
     // 사용자에게서 토큰 가져오기
     public String getAccessTokenFromRequest(HttpServletRequest request){
-        return getTokenFromRequest(request,ACCESS_TOKEN_HEADER);
+        return getTokenFromRequest(request,AUTHORIZATION_HEADER);
     }
 
     // HttpServletRequest 에서 토큰있는지 확인

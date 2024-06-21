@@ -15,9 +15,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
@@ -28,13 +30,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // refreshToken 저장을 위해
     UserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    @Autowired
     UserRepository userRepository;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
         setFilterProcessesUrl("/users/login");
     }
 
@@ -58,7 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     User user = optionalUser.get();
 
                     // 로그인 시도 한 user 가 탈퇴 상태인지 확인 (지금은 임시로 user) + 비밀번호 확인
-                    if (UserRoleEnum.USER.equals(user.getRole())) {
+                    if (UserRoleEnum.WITHOUT.equals(user.getRole())) {
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().write("탈퇴한 계정입니다.");
                     } else if (user.getPassword().equals(loginRequestDto.getPassword())) {
@@ -113,7 +119,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 로그인 성공 메세지
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("로그인 성공");
+        response.getWriter().write("\"로그인 성공!!\"");
     }
 
     // 로그인 실패
@@ -123,7 +129,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 로그인 실패 메세지
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("로그인 성공");
+        response.getWriter().write("로그인 실패");
         // 인증실패 401코드
         response.setStatus(401);
     }

@@ -1,20 +1,55 @@
 package com.sparta.javajyojo.config;
 
+import com.sparta.javajyojo.jwt.JwtAuthenticationFilter;
+import com.sparta.javajyojo.jwt.JwtUtil;
+import com.sparta.javajyojo.repository.UserRepository;
+import com.sparta.javajyojo.service.UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // JwtUtil 추가
+    private JwtUtil jwtUtil;
 
-    // 필터 추가
+    private final UserDetailsService userDetailsService;
+
+    private final AuthenticationConfiguration authenticationConfiguration;
+
+    private final UserService userService;
+
+    public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService, AuthenticationConfiguration authenticationConfiguration, @Lazy UserService userService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.userService = userService;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userService);
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return filter;
+    }
+
 
     // 시큐리티를 사용할 때 특정 URL 통과, 기능 선택
     @Bean
@@ -31,14 +66,23 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
             authorizeHttpRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정 (이게 왜 필요할까?)
-                .requestMatchers("/api/**").permitAll() // "/api" 로 시작하는 요청 모두 접근 허가 (스웨거의 접근도 여기서 허용 가능) (ex 특정 권한이 있는 사용자만 접근 가능하게도 설정 가능)
+                .requestMatchers("/users/**").permitAll()// "/api" 로 시작하는 요청 모두 접근 허가 (스웨거의 접근도 여기서 허용 가능) (ex 특정 권한이 있는 사용자만 접근 가능하게도 설정 가능)
                 .anyRequest().authenticated() // 위의 요청 제외 모든 요청은 인증처리가 필요
             );
 
         // 필터 관리 (동작 순서 지정)
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        // 페스워드 인코딩
+
 
         return http.build();
     }
+
+    // 페스워드 인코딩
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // BCrypt = 비밀번호를 암호화 해주는 Hash 함수(강력한 암호화)
+        return new BCryptPasswordEncoder();
+    }
+
 }
