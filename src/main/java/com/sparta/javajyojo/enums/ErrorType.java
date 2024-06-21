@@ -33,10 +33,7 @@ public enum ErrorType {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다. 다시 로그인 해주세요."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다. 다시 로그인 해주세요."),
 
-    REQUIRES_LOGIN(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다."),
-
-    // ORDER
-    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "존재하지 않는 오더입니다.")
+    REQUIRES_LOGIN(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다.")
     ;
 
     private final HttpStatus httpStatus;
