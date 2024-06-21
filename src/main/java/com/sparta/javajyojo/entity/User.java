@@ -23,7 +23,6 @@ public class User extends Timestamped implements Serializable {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Length(min = 8, max = 15)
     @Column(nullable = false)
     private String password;
 
@@ -57,5 +56,7 @@ public class User extends Timestamped implements Serializable {
         this.name = name.orElse(this.name);
         this.intro = intro.orElse(this.intro);
     }
+
+    public void updateToken(String refreshToken){ this.refreshToken = refreshToken; }
 
 }

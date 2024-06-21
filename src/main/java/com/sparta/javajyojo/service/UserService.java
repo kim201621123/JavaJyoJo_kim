@@ -13,6 +13,7 @@ import com.sparta.javajyojo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,15 +26,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordHistoryRepository passwordHistoryRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     // ADMIN_TOKEN
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public ProfileResponseDto signUp(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
-//        String password = passwordEncoder.encode(requestDto.getPassword());
-        String password = requestDto.getPassword();
+        String password = passwordEncoder.encode(requestDto.getPassword());
 
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
@@ -51,11 +51,11 @@ public class UserService {
         }
 
         User user = new User(
-                username,
-                password,
-                requestDto.getName(),
-                requestDto.getIntro(),
-                role
+            username,
+            password,
+            requestDto.getName(),
+            requestDto.getIntro(),
+            role
         );
         userRepository.save(user);
 
@@ -84,67 +84,51 @@ public class UserService {
     @Transactional
     public ProfileResponseDto update(Long userId, ProfileRequestDto requestDto) {
         User user = findById(userId);
-//        String newEncodePassword = null;
-        String newPassword = null;
+        String newEncodePassword = null;
 
         // 비밀번호 수정 시
         if (requestDto.getPassword() != null) {
-//            // 본인 확인을 위해 현재 비밀번호를 입력하여 올바른 경우
-//            if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-//                throw new CustomException(ErrorType.INVALID_PASSWORD);
-//            }
-//            //현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
-//            if (passwordEncoder.matches(requestDto.getPassword(), requestDto.getNewPassword())) {
-//                throw new CustomException(ErrorType.PASSWORD_SAME);
-//            }
-//            // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
-//            List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
-//            boolean isInPreviousPasswords = recentPasswords.stream()
-//                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
-//            if (isInPreviousPasswords) {
-//                throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
-//            }
-//
-//            newEncodePassword = passwordEncoder.encode(requestDto.getNewPassword());
-//
-//            PasswordHistory passwordHistory = new PasswordHistory(user, newEncodePassword);
-//            passwordHistoryRepository.save(passwordHistory);
-
             // 본인 확인을 위해 현재 비밀번호를 입력하여 올바른 경우
-            if (!requestDto.getPassword().equals(user.getPassword())) {
+            if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
                 throw new CustomException(ErrorType.INVALID_PASSWORD);
             }
-            // 현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
-            if (requestDto.getPassword().equals(requestDto.getNewPassword())) {
+            //현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
+            if (passwordEncoder.matches(requestDto.getPassword(), requestDto.getNewPassword())) {
                 throw new CustomException(ErrorType.PASSWORD_SAME);
             }
-            // 최근 3번안에 사용한 비밀번호는 사용할 수 없도록 제한
+            // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
             List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
             boolean isInPreviousPasswords = recentPasswords.stream()
-                    .anyMatch(pw -> pw.getPassword().equals(requestDto.getNewPassword()));
+                .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
             if (isInPreviousPasswords) {
                 throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
             }
 
-            newPassword = requestDto.getNewPassword();
+            newEncodePassword = passwordEncoder.encode(requestDto.getNewPassword());
 
-            PasswordHistory passwordHistory = new PasswordHistory(user, newPassword);
+            PasswordHistory passwordHistory = new PasswordHistory(user, newEncodePassword);
             passwordHistoryRepository.save(passwordHistory);
         }
 
         user.update(
-//                Optional.ofNullable(newEncodePassword),
-                Optional.ofNullable(newPassword),
-                Optional.ofNullable(requestDto.getName()),
-                Optional.ofNullable(requestDto.getIntro())
+            Optional.ofNullable(newEncodePassword),
+            Optional.ofNullable(requestDto.getName()),
+            Optional.ofNullable(requestDto.getIntro())
         );
 
         return new ProfileResponseDto(user);
     }
 
-    private User findById(Long id) {
+    @Transactional
+    public void updateRefreshToken(Long id, String refreshToken) {
+        User user = findById(id);
+        user.updateToken(refreshToken);
+        userRepository.save(user);
+    }
+
+    public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorType.NOT_FOUND_USER)
+            () -> new CustomException(ErrorType.NOT_FOUND_USER)
         );
     }
 
