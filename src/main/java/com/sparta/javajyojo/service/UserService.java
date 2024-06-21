@@ -142,7 +142,7 @@ public class UserService {
         return new ProfileResponseDto(user);
     }
 
-    public User findById(Long id) {
+    private User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorType.NOT_FOUND_USER)
         );
