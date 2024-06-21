@@ -37,6 +37,8 @@ public class SecurityConfig {
 
         // 필터 관리 (동작 순서 지정)
 
+        // 페스워드 인코딩
+
         return http.build();
     }
 }
