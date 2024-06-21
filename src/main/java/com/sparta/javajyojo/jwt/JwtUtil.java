@@ -1,5 +1,6 @@
 package com.sparta.javajyojo.jwt;
 
+import com.sparta.javajyojo.entity.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -55,13 +56,14 @@ public class JwtUtil {
     }
 
     // 토큰 생성 Access, Refresh Token (UserRoleEnum 추가해야함)
-    public String createToken(String username, Long expires, String tokenType) {
+    public String createToken(String username, UserRoleEnum role, Long expires, String tokenType) {
         // 생성시간
         Date date = new Date();
 
         return BEARER_PREFIX +
             Jwts.builder().setSubject(username)
                 .claim(ACCESS_TOKEN_HEADER, tokenType)
+                .claim("UserRole", role)
                 .setExpiration(new Date(date.getTime() + expires))
                 .setIssuedAt(date)
                 .signWith(signatureAlgorithm, secret)
