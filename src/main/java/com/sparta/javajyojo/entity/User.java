@@ -36,7 +36,6 @@ public class User extends Timestamped implements Serializable {
 
     private String refreshToken;
 
-    @Builder
     public User(String username, String password, String name, String intro, UserRoleEnum role) {
         this.username = username;
         this.password = password;
