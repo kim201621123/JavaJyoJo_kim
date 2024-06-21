@@ -5,6 +5,7 @@ import com.sparta.javajyojo.dto.ProfileResponseDto;
 import com.sparta.javajyojo.dto.SignUpRequestDto;
 import com.sparta.javajyojo.entity.PasswordHistory;
 import com.sparta.javajyojo.entity.User;
+import com.sparta.javajyojo.entity.UserRoleEnum;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.repository.PasswordHistoryRepository;
@@ -26,6 +27,9 @@ public class UserService {
     private final PasswordHistoryRepository passwordHistoryRepository;
 //    private final PasswordEncoder passwordEncoder;
 
+    // ADMIN_TOKEN
+    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
     public ProfileResponseDto signUp(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
 //        String password = passwordEncoder.encode(requestDto.getPassword());
@@ -37,12 +41,21 @@ public class UserService {
             throw new CustomException(ErrorType.DUPLICATE_ACCOUNT_ID);
         }
 
+        // 사용자 ROLE 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (requestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
+                throw new CustomException(ErrorType.INVALID_ADMIN_PASSWORD);
+            }
+            role = UserRoleEnum.ADMIN;
+        }
+
         User user = new User(
                 username,
                 password,
                 requestDto.getName(),
                 requestDto.getIntro(),
-                requestDto.getRole()
+                role
         );
         userRepository.save(user);
 
@@ -53,9 +66,19 @@ public class UserService {
     }
 
     @Transactional
+    public void signOut(Long userId) {
+        User user = findById(userId);
+        user.signOut();
+    }
+
+    @Transactional
     public void logOut(Long userId) {
         User user = findById(userId);
         user.logOut();
+    }
+
+    public ProfileResponseDto getProfile(Long userId) {
+        return new ProfileResponseDto(findById(userId));
     }
 
     @Transactional
@@ -77,7 +100,7 @@ public class UserService {
 //            // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
 //            List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
 //            boolean isInPreviousPasswords = recentPasswords.stream()
-//                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), pw));
+//                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
 //            if (isInPreviousPasswords) {
 //                throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
 //            }
