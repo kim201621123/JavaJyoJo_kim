@@ -100,7 +100,7 @@ public class UserService {
 //            // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
 //            List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
 //            boolean isInPreviousPasswords = recentPasswords.stream()
-//                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), pw));
+//                    .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
 //            if (isInPreviousPasswords) {
 //                throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
 //            }
