@@ -3,8 +3,10 @@ package com.sparta.javajyojo.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class SignUpRequestDto {
     @NotBlank(message = "사용자 이름은 필수입니다.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[0-9])[a-z0-9]+$",
@@ -18,5 +20,6 @@ public class SignUpRequestDto {
 
     private String name;
     private String intro;
-    private String role;
+    private boolean admin = false;
+    private String adminToken = "";
 }
