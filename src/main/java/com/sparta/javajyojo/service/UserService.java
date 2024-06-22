@@ -59,9 +59,6 @@ public class UserService {
         );
         userRepository.save(user);
 
-        PasswordHistory passwordHistory = new PasswordHistory(user, password);
-        passwordHistoryRepository.save(passwordHistory);
-
         return new ProfileResponseDto(user);
     }
 
