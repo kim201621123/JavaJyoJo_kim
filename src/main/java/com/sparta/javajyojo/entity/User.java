@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "users")
-public class User extends Timestamped {
+public class User extends Timestamped implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +23,8 @@ public class User extends Timestamped {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Length(min = 8, max = 15)
     @Column(nullable = false)
     private String password;
-
-    @ElementCollection
-    private List<String> pwUsdLst3Tms = new ArrayList<>();
 
     private String name;
 
@@ -38,15 +35,16 @@ public class User extends Timestamped {
 
     private String refreshToken;
 
-    @Builder
-    public User(String username, String password, String name, String intro, String role) {
+    public User(String username, String password, String name, String intro, UserRoleEnum role) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.intro = intro;
-        this.role = UserRoleEnum.valueOf(role);
-        this.pwUsdLst3Tms = new ArrayList<>();
-        this.pwUsdLst3Tms.add(password);
+        this.role = role;
+    }
+
+    public void signOut() {
+        this.role = UserRoleEnum.WITHOUT;
     }
 
     public void logOut() {
@@ -54,17 +52,11 @@ public class User extends Timestamped {
     }
 
     public void update(Optional<String> newPassword, Optional<String> name, Optional<String> intro) {
-        if (newPassword.isPresent()) {
-            this.password = newPassword.get();
-
-            this.pwUsdLst3Tms.add(this.password);
-            if (pwUsdLst3Tms.size() > 3) {
-                pwUsdLst3Tms.remove(0);
-            }
-        }
-
+        this.password = newPassword.orElse(this.password);
         this.name = name.orElse(this.name);
         this.intro = intro.orElse(this.intro);
     }
+
+    public void updateToken(String refreshToken){ this.refreshToken = refreshToken; }
 
 }

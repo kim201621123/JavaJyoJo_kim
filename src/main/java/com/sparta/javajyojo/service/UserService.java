@@ -3,13 +3,21 @@ package com.sparta.javajyojo.service;
 import com.sparta.javajyojo.dto.ProfileRequestDto;
 import com.sparta.javajyojo.dto.ProfileResponseDto;
 import com.sparta.javajyojo.dto.SignUpRequestDto;
+import com.sparta.javajyojo.entity.PasswordHistory;
 import com.sparta.javajyojo.entity.User;
+import com.sparta.javajyojo.entity.UserRoleEnum;
+import com.sparta.javajyojo.enums.ErrorType;
+import com.sparta.javajyojo.exception.CustomException;
+import com.sparta.javajyojo.repository.PasswordHistoryRepository;
 import com.sparta.javajyojo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,29 +26,57 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordHistoryRepository passwordHistoryRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    // ADMIN_TOKEN
+    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
+    // 유저 이름(username)을 기반으로 유저의 ID를 가져오는 메서드
+    public Long getUserIdByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+        return user.getId();
+    }
 
     public ProfileResponseDto signUp(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
-//        String password = passwordEncoder.encode(requestDto.getPassword());
-        String password = requestDto.getPassword();
+        String password = passwordEncoder.encode(requestDto.getPassword());
 
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
         if (optionalUser.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
+            throw new CustomException(ErrorType.DUPLICATE_ACCOUNT_ID);
+        }
+
+        // 사용자 ROLE 확인
+        UserRoleEnum role = UserRoleEnum.USER;
+        if (requestDto.isAdmin()) {
+            if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
+                throw new CustomException(ErrorType.INVALID_ADMIN_PASSWORD);
+            }
+            role = UserRoleEnum.ADMIN;
         }
 
         User user = new User(
-                username,
-                password,
-                requestDto.getName(),
-                requestDto.getIntro(),
-                requestDto.getRole()
+            username,
+            password,
+            requestDto.getName(),
+            requestDto.getIntro(),
+            role
         );
         userRepository.save(user);
 
+        PasswordHistory passwordHistory = new PasswordHistory(user, password);
+        passwordHistoryRepository.save(passwordHistory);
+
         return new ProfileResponseDto(user);
+    }
+
+    @Transactional
+    public void signOut(Long userId) {
+        User user = findById(userId);
+        user.signOut();
     }
 
     @Transactional
@@ -49,61 +85,58 @@ public class UserService {
         user.logOut();
     }
 
+    public ProfileResponseDto getProfile(Long userId) {
+        return new ProfileResponseDto(findById(userId));
+    }
+
     @Transactional
     public ProfileResponseDto update(Long userId, ProfileRequestDto requestDto) {
         User user = findById(userId);
-//        String newEncodePassword = null;
-        String newPassword = null;
+        String newEncodePassword = null;
 
         // 비밀번호 수정 시
         if (requestDto.getPassword() != null) {
-//            // 본인 확인을 위해 현재 비밀번호를 입력하여 올바른 경우
-//            if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-//                throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-//            }
-//            //현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
-//            if (passwordEncoder.matches(requestDto.getPassword(), requestDto.getNewPassword())) {
-//                throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
-//            }
-//            // 최근 3번안에 사용한 비밀번호는 사용할 수 없도록 제한
-//            boolean isInPreviousPasswords = user.getPwUsdLst3Tms().stream()
-//                    .anyMatch(pw -> passwordEncoder.match(requestDto.getNewPassword(), pw));
-//            if (isInPreviousPasswords) {
-//                throw new IllegalArgumentException("이전 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
-//            }
-//            newEncodePassword = passwordEncoder.encode(requestDto.getNewPassword());
-
             // 본인 확인을 위해 현재 비밀번호를 입력하여 올바른 경우
-            if (!requestDto.getPassword().equals(user.getPassword())) {
-                throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+                throw new CustomException(ErrorType.INVALID_PASSWORD);
             }
-            // 현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
-            if (requestDto.getPassword().equals(requestDto.getNewPassword())) {
-                throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
+            //현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
+            if (passwordEncoder.matches(requestDto.getPassword(), requestDto.getNewPassword())) {
+                throw new CustomException(ErrorType.PASSWORD_SAME);
             }
-            // 최근 3번안에 사용한 비밀번호는 사용할 수 없도록 제한
-            boolean isInPreviousPasswords = user.getPwUsdLst3Tms().stream()
-                    .anyMatch(pw -> pw.equals(requestDto.getNewPassword()));
+            // 최근 3번 안에 사용한 비밀번호는 사용할 수 없도록 제한
+            List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangeDateDesc(user);
+            boolean isInPreviousPasswords = recentPasswords.stream()
+                .anyMatch(pw -> passwordEncoder.matches(requestDto.getNewPassword(), String.valueOf(pw)));
             if (isInPreviousPasswords) {
-                throw new IllegalArgumentException("이전 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
+                throw new CustomException(ErrorType.PASSWORD_RECENTLY_USED);
             }
 
-            newPassword = requestDto.getNewPassword();
+            newEncodePassword = passwordEncoder.encode(requestDto.getNewPassword());
+
+            PasswordHistory passwordHistory = new PasswordHistory(user, newEncodePassword);
+            passwordHistoryRepository.save(passwordHistory);
         }
 
         user.update(
-//                Optional.ofNullable(newEncodePassword),
-                Optional.ofNullable(newPassword),
-                Optional.ofNullable(requestDto.getName()),
-                Optional.ofNullable(requestDto.getIntro())
+            Optional.ofNullable(newEncodePassword),
+            Optional.ofNullable(requestDto.getName()),
+            Optional.ofNullable(requestDto.getIntro())
         );
 
         return new ProfileResponseDto(user);
     }
 
+    @Transactional
+    public void updateRefreshToken(Long id, String refreshToken) {
+        User user = findById(id);
+        user.updateToken(refreshToken);
+        userRepository.save(user);
+    }
+
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")
+            () -> new CustomException(ErrorType.NOT_FOUND_USER)
         );
     }
 
