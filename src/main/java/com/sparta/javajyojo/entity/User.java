@@ -16,7 +16,7 @@ public class User extends Timestamped implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long userId;
 
     @Length(min = 4, max = 10)
     @Column(unique = true, nullable = false)

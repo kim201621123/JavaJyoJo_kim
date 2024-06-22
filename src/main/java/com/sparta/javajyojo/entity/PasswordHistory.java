@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "password_history")
+@Table(name = "password_historys")
 public class PasswordHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long pwHistoryId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
