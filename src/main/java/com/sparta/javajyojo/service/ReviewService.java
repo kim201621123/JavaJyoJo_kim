@@ -4,15 +4,17 @@ import com.sparta.javajyojo.dto.ReviewRequestDto;
 import com.sparta.javajyojo.dto.ReviewResponseDto;
 import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
+import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
-import com.sparta.javajyojo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -21,56 +23,60 @@ public class ReviewService {
     public final OrderRepository orderRepository;
 
     @Transactional
-    public ReviewResponseDto createReview(UserDetailsImpl userDetails, ReviewRequestDto reviewRequestDto, Order order){
+    public ReviewResponseDto createReview(User user, Long orderId, ReviewRequestDto requestDto) {
 
-        if (userDetails.getUser().getId() != order.getUser().getId()){
+        Order order = findOrderById(orderId);
+        if (user.getUserId() != order.getUser().getUserId()) {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
-        if (findReviewByOrderAndUserId(order, order.getUser().getId())){
+        if (findReviewByOrderAndUserId(order, order.getUser().getUserId())) {
             throw new CustomException(ErrorType.DUPLICATE_Review_ID);
         }
-        Review review = new Review(reviewRequestDto, order);
+
+        Review review = new Review(requestDto, order);
         reviewRepository.save(review);
+
         return new ReviewResponseDto(review);
-    }
-
-    @Transactional
-    public ReviewResponseDto updateReview(UserDetailsImpl userDetails, ReviewRequestDto reviewRequestDto,
-                                          Long reviewId){
-        Review review = getReviewById(reviewId);
-        if (userDetails.getUser().getId() != review.getUserId()){
-            System.out.println(userDetails.getUser().getId());
-            throw new CustomException(ErrorType.NO_AUTHENTICATION);
-        }
-        review.update(reviewRequestDto);
-        return new ReviewResponseDto(review);
-    }
-
-    @Transactional
-    public ReviewResponseDto deleteReview(UserDetailsImpl userDetails, Long reviewId) {
-        Review review = getReviewById(reviewId);
-        System.out.println(userDetails.getUser().getId());
-        System.out.println(review.getUserId());
-        if (userDetails.getUser().getId() != review.getUserId()){
-            throw new CustomException(ErrorType.NO_AUTHENTICATION);
-        }
-        ReviewResponseDto reviewResponseDto = new ReviewResponseDto(review);
-        reviewRepository.delete(review);
-        return reviewResponseDto;
-    }
-
-
-    public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(
-                () -> new CustomException(ErrorType.NOT_FOUND_ORDER));
     }
 
     public Review getReviewById(Long reviewId){
-        return reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_REVIEW));
+        return reviewRepository.findById(reviewId).orElseThrow(
+                () -> new CustomException(ErrorType.NOT_FOUND_REVIEW)
+        );
     }
 
-    public boolean findReviewByOrderAndUserId(Order order, Long userId){
+    @Transactional
+    public ReviewResponseDto updateReview(User user, Long reviewId, ReviewRequestDto requestDto) {
+
+        Review review = getReviewById(reviewId);
+        if (user.getUserId() != review.getUserId()){
+            System.out.println(user.getUserId());
+            throw new CustomException(ErrorType.NO_AUTHENTICATION);
+        }
+
+        review.update(requestDto);
+
+        return new ReviewResponseDto(review);
+    }
+
+    @Transactional
+    public void deleteReview(User user, Long reviewId) {
+
+        Review review = getReviewById(reviewId);
+        if (user.getUserId() != review.getUserId()){
+            throw new CustomException(ErrorType.NO_AUTHENTICATION);
+        }
+
+        reviewRepository.delete(review);
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new CustomException(ErrorType.NOT_FOUND_ORDER)
+        );
+    }
+
+    private boolean findReviewByOrderAndUserId(Order order, Long userId){
         return reviewRepository.findReviewByOrderAndUserId(order, userId).isPresent();
     }
 

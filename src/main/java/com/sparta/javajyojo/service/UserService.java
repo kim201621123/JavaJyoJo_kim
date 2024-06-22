@@ -13,7 +13,6 @@ import com.sparta.javajyojo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +30,6 @@ public class UserService {
 
     // ADMIN_TOKEN
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-
-    // 유저 이름(username)을 기반으로 유저의 ID를 가져오는 메서드
-    public Long getUserIdByUsername(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
-        return user.getId();
-    }
 
     public ProfileResponseDto signUp(SignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -91,6 +83,7 @@ public class UserService {
 
     @Transactional
     public ProfileResponseDto update(Long userId, ProfileRequestDto requestDto) {
+
         User user = findById(userId);
         String newEncodePassword = null;
 
@@ -134,7 +127,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User findById(Long id) {
+    private User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
             () -> new CustomException(ErrorType.NOT_FOUND_USER)
         );
