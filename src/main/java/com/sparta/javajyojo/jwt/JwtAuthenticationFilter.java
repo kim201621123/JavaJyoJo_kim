@@ -4,7 +4,7 @@ package com.sparta.javajyojo.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.javajyojo.dto.LoginRequestDto;
 import com.sparta.javajyojo.entity.User;
-import com.sparta.javajyojo.entity.UserRoleEnum;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.repository.UserRepository;
 import com.sparta.javajyojo.security.UserDetailsImpl;
 import com.sparta.javajyojo.service.UserService;
