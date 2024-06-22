@@ -1,8 +1,6 @@
 package com.sparta.javajyojo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.javajyojo.dto.ReviewRequestDto;
-import com.sparta.javajyojo.dto.ReviewResponseDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

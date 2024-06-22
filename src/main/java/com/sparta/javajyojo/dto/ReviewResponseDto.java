@@ -1,6 +1,5 @@
 package com.sparta.javajyojo.dto;
 
-import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
 import lombok.Getter;
 import lombok.Setter;

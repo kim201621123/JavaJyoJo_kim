@@ -4,21 +4,14 @@ import com.sparta.javajyojo.dto.ReviewRequestDto;
 import com.sparta.javajyojo.dto.ReviewResponseDto;
 import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
-import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
 import com.sparta.javajyojo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

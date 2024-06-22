@@ -3,8 +3,6 @@ package com.sparta.javajyojo.controller;
 import com.sparta.javajyojo.dto.ReviewRequestDto;
 import com.sparta.javajyojo.dto.ReviewResponseDto;
 import com.sparta.javajyojo.entity.Order;
-import com.sparta.javajyojo.entity.Review;
-import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
 import com.sparta.javajyojo.security.UserDetailsImpl;
@@ -14,11 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/orders")
