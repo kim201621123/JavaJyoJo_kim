@@ -2,7 +2,6 @@ package com.sparta.javajyojo.controller;
 
 import com.sparta.javajyojo.dto.OrderRequestDto;
 import com.sparta.javajyojo.dto.OrderResponseDto;
-import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.security.UserDetailsImpl;
@@ -24,61 +23,46 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @RequestBody OrderRequestDto orderRequestDto) {
-        // 사용자 및 JWT 토큰 유효성 검사
         validateUser(userDetails);
-
-        // 서비스에 주문 생성을 위임
         OrderResponseDto orderResponseDto = orderService.createOrder(orderRequestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
     }
 
     @GetMapping
-    public ResponseEntity<Page<Order>> getOrders(@RequestParam int page, @RequestParam int size,
-                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 사용자 및 JWT 토큰 유효성 검사
+    public ResponseEntity<Page<OrderResponseDto>> getOrders(@RequestParam int page, @RequestParam int size,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         validateUser(userDetails);
-
-        // 서비스에 주문 목록 조회를 위임
-        Page<Order> orders = orderService.getOrders(page, size);
+        Page<OrderResponseDto> orders = orderService.getOrders(page, size, userDetails.getUser());
         return ResponseEntity.ok().body(orders);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrder(@PathVariable Long orderId,
-                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 사용자 및 JWT 토큰 유효성 검사
+    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable Long orderId,
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         validateUser(userDetails);
-
-        // 서비스에 주문 조회를 위임
-        Order order = orderService.getOrder(orderId, userDetails.getUser());
+        OrderResponseDto order = orderService.getOrder(orderId, userDetails.getUser());
         return ResponseEntity.ok().body(order);
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long orderId,
-                                             @RequestBody OrderRequestDto orderRequestDto,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 사용자 및 JWT 토큰 유효성 검사
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long orderId,
+                                                        @RequestBody OrderRequestDto orderRequestDto,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         validateUser(userDetails);
-
-        // 서비스에 주문 수정을 위임
-        Order updatedOrder = orderService.updateOrder(orderId, orderRequestDto, userDetails.getUser());
+        OrderResponseDto updatedOrder = orderService.updateOrder(orderId, orderRequestDto, userDetails.getUser());
         return ResponseEntity.ok().body(updatedOrder);
     }
 
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long orderId,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 사용자 및 JWT 토큰 유효성 검사
         validateUser(userDetails);
-
-        // 서비스에 주문 삭제를 위임
         orderService.deleteOrder(orderId, userDetails.getUser());
-        return ResponseEntity.ok().body("주문 삭제가 완료되었습니다.");
+        return ResponseEntity.ok("주문이 삭제되었습니다.");
     }
 
     private void validateUser(UserDetailsImpl userDetails) {
-        if (userDetails == null) {
+        if (userDetails == null || userDetails.getUser() == null) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
     }
