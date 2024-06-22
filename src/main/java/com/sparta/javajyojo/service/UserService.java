@@ -59,9 +59,6 @@ public class UserService {
         );
         userRepository.save(user);
 
-        PasswordHistory passwordHistory = new PasswordHistory(user, password);
-        passwordHistoryRepository.save(passwordHistory);
-
         return new ProfileResponseDto(user);
     }
 
@@ -93,7 +90,7 @@ public class UserService {
             if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
                 throw new CustomException(ErrorType.INVALID_PASSWORD);
             }
-            //현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
+            // 현재 비밀번호와 동일한 비밀번호로는 변경할 수 없음
             if (passwordEncoder.matches(requestDto.getPassword(), requestDto.getNewPassword())) {
                 throw new CustomException(ErrorType.PASSWORD_SAME);
             }

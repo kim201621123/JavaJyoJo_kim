@@ -30,6 +30,10 @@ public class User extends Timestamped implements Serializable {
 
     private String intro;
 
+    private String email;
+
+    private Long kakaoId;
+
     @Enumerated(EnumType.STRING)
     private UserRoleEnum role;
 
@@ -41,6 +45,14 @@ public class User extends Timestamped implements Serializable {
         this.name = name;
         this.intro = intro;
         this.role = role;
+    }
+
+    public User(String username, String password, String email, UserRoleEnum role, Long kakaoId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.kakaoId = kakaoId;
     }
 
     public void signOut() {
@@ -57,6 +69,13 @@ public class User extends Timestamped implements Serializable {
         this.intro = intro.orElse(this.intro);
     }
 
-    public void updateToken(String refreshToken){ this.refreshToken = refreshToken; }
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
+    }
+
+    public void updateToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 
 }

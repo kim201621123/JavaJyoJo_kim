@@ -13,7 +13,7 @@ public class ReviewResponseDto {
 
     public ReviewResponseDto(Review review) {
         this.id = review.getReviewId();
-        this.orderId = review.getOrder().getOrderId(); //쿼리는 2번 날라가게 됨
+        this.orderId = review.getOrder().getOrderId(); // 쿼리는 2번 날라가게 됨
         this.userId = review.getUserId();
         this.review = review.getReview();
         this.rating = review.getRating();
