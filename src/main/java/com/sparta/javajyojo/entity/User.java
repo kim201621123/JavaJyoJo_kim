@@ -1,5 +1,6 @@
 package com.sparta.javajyojo.entity;
 
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

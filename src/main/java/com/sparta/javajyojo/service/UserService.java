@@ -5,7 +5,7 @@ import com.sparta.javajyojo.dto.ProfileResponseDto;
 import com.sparta.javajyojo.dto.SignUpRequestDto;
 import com.sparta.javajyojo.entity.PasswordHistory;
 import com.sparta.javajyojo.entity.User;
-import com.sparta.javajyojo.entity.UserRoleEnum;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.repository.PasswordHistoryRepository;

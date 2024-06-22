@@ -1,4 +1,4 @@
-package com.sparta.javajyojo.entity;
+package com.sparta.javajyojo.enums;
 
 public enum UserRoleEnum {
     USER(Authority.USER),  // 사용자 권한

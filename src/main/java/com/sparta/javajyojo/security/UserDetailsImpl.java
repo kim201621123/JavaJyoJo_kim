@@ -1,7 +1,7 @@
 package com.sparta.javajyojo.security;
 
 import com.sparta.javajyojo.entity.User;
-import com.sparta.javajyojo.entity.UserRoleEnum;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

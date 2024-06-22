@@ -1,6 +1,6 @@
 package com.sparta.javajyojo.jwt;
 
-import com.sparta.javajyojo.entity.UserRoleEnum;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
