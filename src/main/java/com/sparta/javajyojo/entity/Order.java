@@ -43,8 +43,12 @@ public class Order extends Timestamped {
     @Column(nullable = false)
     private int totalPrice; // 총 주문 금액 필드 추가
 
-    // 총 주문 금액을 설정하는 메서드
-    public void setTotalPrice(int totalPrice) {
+    // 생성자 추가
+    public Order(User user, String deliveryRequest, String address, OrderStatus orderStatus, int totalPrice) {
+        this.user = user;
+        this.deliveryRequest = deliveryRequest;
+        this.address = address;
+        this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
     }
 }

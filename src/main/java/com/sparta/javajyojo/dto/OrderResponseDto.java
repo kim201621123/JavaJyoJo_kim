@@ -15,15 +15,17 @@ public class OrderResponseDto {
     private final String deliveryRequest;
     private final String address;
     private final String orderStatus;
+    private final int totalPrice;
     private final List<OrderDetailDto> orderDetails;
 
-    public OrderResponseDto(Order order) {
+    public OrderResponseDto(Order order, List<OrderDetail> orderDetails) {
         this.orderId = order.getOrderId();
         this.userId = order.getUser().getId();
         this.deliveryRequest = order.getDeliveryRequest();
         this.address = order.getAddress();
         this.orderStatus = order.getOrderStatus().name(); // OrderStatus를 문자열로 변환하여 할당
-        this.orderDetails = order.getOrderDetails().stream()
+        this.totalPrice = order.getTotalPrice();
+        this.orderDetails = orderDetails.stream()
                 .map(OrderDetailDto::new)
                 .collect(Collectors.toList());
     }

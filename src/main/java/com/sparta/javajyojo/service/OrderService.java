@@ -19,6 +19,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -29,83 +32,80 @@ public class OrderService {
     private final UserRepository userRepository;
 
     @Transactional
-    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, Long userId) {
-        // 유저 정보 조회
-        User user = findUserById(userId);
+    public OrderResponseDto createOrder(OrderRequestDto orderRequestDto, User user) {
+        int totalPrice = calculateTotalPrice(orderRequestDto);
+        Order order = new Order(user, orderRequestDto.getDeliveryRequest(), orderRequestDto.getAddress(), OrderStatus.NEW, totalPrice);
+        orderRepository.save(order);
+        List<OrderDetail> orderDetails = saveOrderDetails(orderRequestDto, order);
+        return new OrderResponseDto(order, orderDetails);  // 주문 상세 정보와 총 금액을 포함한 응답 반환
+    }
 
-        // 총 주문 금액 계산
-        int totalPrice = 0;
-        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
-            // 메뉴 ID로 메뉴의 가격 조회
-            int menuPrice = menuRepository.findById(detailDto.getMenuId())
-                    .orElseThrow(() -> new CustomException(ErrorType.INVALID_MENU_ID))
-                    .getPrice();
-            // 메뉴 가격 * 수량을 총 주문 금액에 더함
-            totalPrice += menuPrice * detailDto.getAmount();
+    @Transactional
+    public OrderResponseDto updateOrder(Long orderId, OrderRequestDto orderRequestDto, User user) {
+        Order order = getOrderEntity(orderId, user);
+        if (order.getUser().getId() != user.getId()) {
+            throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
-
-        // 주문 엔티티 생성 및 저장
-        Order order = new Order();
-        order.setAddress(orderRequestDto.getAddress());
         order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-        order.setOrderStatus(OrderStatus.NEW);
-        order.setTotalPrice(totalPrice); // 총 주문 금액 저장
-        order.setUser(user);
+        order.setAddress(orderRequestDto.getAddress());
+        order.setOrderStatus(OrderStatus.UPDATED);
+
+        // 주문 상세 정보가 업데이트 될 경우 총 금액 다시 계산
+        int totalPrice = calculateTotalPrice(orderRequestDto);
+        order.setTotalPrice(totalPrice);
 
         orderRepository.save(order);
+        List<OrderDetail> orderDetails = saveOrderDetails(orderRequestDto, order);
+        return new OrderResponseDto(order, orderDetails);
+    }
 
-        // 주문 상세 엔티티 생성 및 저장
-        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
-            OrderDetail orderDetail = new OrderDetail();
-            orderDetail.setOrder(order);
-            orderDetail.setMenu(menuRepository.findById(detailDto.getMenuId())
-                    .orElseThrow(() -> new CustomException(ErrorType.INVALID_MENU_ID)));
-            orderDetail.setAmount(detailDto.getAmount());
-            orderDetailRepository.save(orderDetail);
+    @Transactional
+    public void deleteOrder(Long orderId, User user) {
+        Order order = getOrderEntity(orderId, user);
+        if (order.getUser().getId() != user.getId()) {
+            throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
-
-        return new OrderResponseDto(order);
-    }
-
-    // 주문 목록 조회
-    public Page<Order> getOrders(int page, int size) {
-        return orderRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-    }
-
-    // 주문 조회
-    public Order getOrder(Long orderId) {
-        return findOrderById(orderId);
-    }
-
-    @Transactional
-    public Order updateOrder(Long orderId, OrderRequestDto orderRequestDto) {
-        Order order = findOrderById(orderId);
-
-        order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-        order.setAddress(orderRequestDto.getAddress());
-        order.setOrderStatus(OrderStatus.UPDATED); // OrderStatus 열거형 사용
-
-        return orderRepository.save(order);
-    }
-
-    @Transactional
-    public void deleteOrder(Long orderId) {
-        // 주문 ID로 주문 엔티티 조회
-        Order order = findOrderById(orderId);
-
-        // 주문 엔티티 삭제
         orderRepository.delete(order);
     }
 
-    // 주문 ID로 주문 엔티티 조회 메서드
-    private Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_ORDER));
+    public Page<OrderResponseDto> getOrders(int page, int size, User user) {
+        Page<Order> orders = orderRepository.findAllByUser(user, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return orders.map(order -> new OrderResponseDto(order, order.getOrderDetails()));
     }
 
-    // 사용자 ID로 사용자 엔티티 조회 메서드
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
+    public OrderResponseDto getOrder(Long orderId, User user) {
+        Order order = getOrderEntity(orderId, user);
+        return new OrderResponseDto(order, order.getOrderDetails());
+    }
+
+    private Order getOrderEntity(Long orderId, User user) {
+        Order order = orderRepository.findByOrderId(orderId);
+        if (order == null || order.getUser().getId() != user.getId()) {
+            throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
+        }
+        return order;
+    }
+
+    private int calculateTotalPrice(OrderRequestDto orderRequestDto) {
+        int totalPrice = 0;
+        for (OrderRequestDto.OrderDetailDto detailDto : orderRequestDto.getOrderDetails()) {
+            int menuPrice = menuRepository.findById(detailDto.getMenuId())
+                    .orElseThrow(() -> new CustomException(ErrorType.INVALID_INPUT))
+                    .getPrice();
+            totalPrice += menuPrice * detailDto.getAmount();
+        }
+        return totalPrice;
+    }
+
+    private List<OrderDetail> saveOrderDetails(OrderRequestDto orderRequestDto, Order order) {
+        List<OrderDetail> orderDetails = orderRequestDto.getOrderDetails().stream().map(detailDto -> {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+            orderDetail.setMenu(menuRepository.findById(detailDto.getMenuId())
+                    .orElseThrow(() -> new CustomException(ErrorType.INVALID_INPUT)));
+            orderDetail.setAmount(detailDto.getAmount());
+            return orderDetailRepository.save(orderDetail);
+        }).collect(Collectors.toList());
+        return orderDetails;
     }
 }
