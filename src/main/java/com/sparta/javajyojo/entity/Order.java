@@ -10,10 +10,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
 @Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class) // JPA Auditing 활성화
 public class Order extends Timestamped {

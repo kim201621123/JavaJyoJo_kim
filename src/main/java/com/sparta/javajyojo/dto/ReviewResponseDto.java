@@ -1,13 +1,9 @@
 package com.sparta.javajyojo.dto;
 
-import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
 import lombok.Getter;
-import lombok.Setter;
-
 
 @Getter
-@Setter
 public class ReviewResponseDto {
     private final Long id;
     private final Long orderId;

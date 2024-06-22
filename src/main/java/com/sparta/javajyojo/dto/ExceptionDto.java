@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class ExceptionDto {
-
     private final String result;
     private ErrorType errorType;
     private final String message;

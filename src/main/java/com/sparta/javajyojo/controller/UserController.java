@@ -14,9 +14,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -32,7 +32,8 @@ public class UserController {
     public ResponseEntity<String> signOut(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        userService.signOut(userDetails.getUser().getId());
+        userService.signOut(userDetails.getUser().getUserId());
+
         return ResponseEntity.ok().body("회원 탈퇴에 성공했습니다.");
     }
 
@@ -40,7 +41,8 @@ public class UserController {
     public ResponseEntity<String> logOut(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        userService.logOut(userDetails.getUser().getId());
+        userService.logOut(userDetails.getUser().getUserId());
+
         return ResponseEntity.ok().body("로그아웃 성공하셨습니다");
     }
 
@@ -48,7 +50,7 @@ public class UserController {
     public ResponseEntity<ProfileResponseDto> getProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return ResponseEntity.ok().body(userService.getProfile(userDetails.getUser().getId()));
+        return ResponseEntity.ok().body(userService.getProfile(userDetails.getUser().getUserId()));
     }
 
     @PatchMapping
@@ -56,7 +58,7 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ProfileRequestDto requestDto) {
 
-        return ResponseEntity.ok().body(userService.update(userDetails.getUser().getId(), requestDto));
+        return ResponseEntity.ok().body(userService.update(userDetails.getUser().getUserId(), requestDto));
     }
 
 }

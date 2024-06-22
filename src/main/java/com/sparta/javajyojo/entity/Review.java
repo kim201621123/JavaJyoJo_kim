@@ -1,8 +1,6 @@
 package com.sparta.javajyojo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.javajyojo.dto.ReviewRequestDto;
-import com.sparta.javajyojo.dto.ReviewResponseDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +12,7 @@ import lombok.Setter;
 @Table(name = "reviews")
 @NoArgsConstructor
 public class Review extends Timestamped{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewId;
@@ -30,7 +29,7 @@ public class Review extends Timestamped{
 
     public Review(ReviewRequestDto reviewRequestDto, Order order){
         this.order = order;
-        this.userId = order.getUser().getId();
+        this.userId = order.getUser().getUserId();
         this.review = reviewRequestDto.getReview();
         this.rating = reviewRequestDto.getRating();
     }

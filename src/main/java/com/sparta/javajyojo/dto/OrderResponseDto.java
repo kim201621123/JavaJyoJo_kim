@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @Getter
 public class OrderResponseDto {
-
     private final Long orderId;
     private final Long userId;
     private final String deliveryRequest;
@@ -20,7 +19,7 @@ public class OrderResponseDto {
 
     public OrderResponseDto(Order order, List<OrderDetail> orderDetails) {
         this.orderId = order.getOrderId();
-        this.userId = order.getUser().getId();
+        this.userId = order.getUser().getUserId();
         this.deliveryRequest = order.getDeliveryRequest();
         this.address = order.getAddress();
         this.orderStatus = order.getOrderStatus().name(); // OrderStatus를 문자열로 변환하여 할당
