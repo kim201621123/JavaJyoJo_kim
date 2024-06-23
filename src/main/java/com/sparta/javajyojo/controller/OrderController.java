@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @Slf4j
 @RestController
 @RequestMapping("/orders")
@@ -28,6 +30,10 @@ public class OrderController {
             @RequestBody OrderRequestDto orderRequestDto) {
 
         validateUser(userDetails);
+
+        if (orderRequestDto.getOrderDetails() == null) {
+            orderRequestDto.setOrderDetails(new ArrayList<>());
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(userDetails.getUser(), orderRequestDto));
     }
@@ -61,7 +67,11 @@ public class OrderController {
 
         validateUser(userDetails);
 
-        return ResponseEntity.ok().body(orderService.updateOrder(userDetails.getUser(),orderId, orderRequestDto));
+        if (orderRequestDto.getOrderDetails() == null) {
+            orderRequestDto.setOrderDetails(new ArrayList<>());
+        }
+
+        return ResponseEntity.ok().body(orderService.updateOrder(userDetails.getUser(), orderId, orderRequestDto));
     }
 
     @DeleteMapping("/{orderId}")
@@ -80,5 +90,4 @@ public class OrderController {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
     }
-
 }

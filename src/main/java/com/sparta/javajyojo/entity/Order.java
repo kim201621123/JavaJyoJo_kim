@@ -41,9 +41,8 @@ public class Order extends Timestamped {
     private String address;
 
     @Column(nullable = false)
-    private int totalPrice; // 총 주문 금액 필드 추가
+    private int totalPrice;
 
-    // 생성자 추가
     public Order(User user, String deliveryRequest, String address, OrderStatus orderStatus, int totalPrice) {
         this.user = user;
         this.deliveryRequest = deliveryRequest;
