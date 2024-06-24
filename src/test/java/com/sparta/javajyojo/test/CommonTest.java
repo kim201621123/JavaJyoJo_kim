@@ -6,8 +6,8 @@ public interface CommonTest {
     String ANOTHER_PREFIX = "another-";
     Long TEST_USER_ID = 1L;
     Long TEST_ANOTHER_USER_ID = 2L;
-    String TEST_USER_NAME = "username";
-    String TEST_USER_PASSWORD = "password";
+    String TEST_USER_NAME = "username1";
+    String TEST_USER_PASSWORD = "A1234qwer!";
     User TEST_USER = User.builder()
             .username(TEST_USER_NAME)
             .password(TEST_USER_PASSWORD)
