@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @Slf4j
 @RestController
 @RequestMapping("/orders")
@@ -28,6 +30,10 @@ public class OrderController {
             @RequestBody OrderRequestDto orderRequestDto) {
 
         validateUser(userDetails);
+
+        if (orderRequestDto.getOrderDetails() == null) {
+            orderRequestDto.setOrderDetails(new ArrayList<>());
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(userDetails.getUser(), orderRequestDto));
     }
@@ -61,7 +67,22 @@ public class OrderController {
 
         validateUser(userDetails);
 
-        return ResponseEntity.ok().body(orderService.updateOrder(userDetails.getUser(),orderId, orderRequestDto));
+        if (orderRequestDto.getOrderDetails() == null) {
+            orderRequestDto.setOrderDetails(new ArrayList<>());
+        }
+
+        return ResponseEntity.ok().body(orderService.updateOrder(userDetails.getUser(), orderId, orderRequestDto));
+    }
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long orderId,
+            @RequestBody OrderRequestDto orderRequestDto) {
+
+        validateUser(userDetails);
+
+        return ResponseEntity.ok().body(orderService.updateOrderStatus(userDetails.getUser(), orderId, orderRequestDto.getOrderStatus()));
     }
 
     @DeleteMapping("/{orderId}")
@@ -72,7 +93,7 @@ public class OrderController {
         validateUser(userDetails);
         orderService.deleteOrder(userDetails.getUser(), orderId);
 
-        return ResponseEntity.ok().body("주문이 삭제되었습니다.");
+        return ResponseEntity.ok().body("주문이 취소되었습니다.");
     }
 
     private void validateUser(UserDetailsImpl userDetails) {
@@ -80,5 +101,4 @@ public class OrderController {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
     }
-
 }
