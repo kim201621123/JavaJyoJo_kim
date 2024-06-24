@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Entity
 @Getter
 @Setter
@@ -28,4 +30,10 @@ public class OrderDetail {
 
     @Column(nullable = false)
     private int amount;
+
+    public OrderDetail(Order order, Menu menu, int amount) {
+        this.order = order;
+        this.menu = menu;
+        this.amount = amount;
+    }
 }

@@ -5,6 +5,7 @@ import com.sparta.javajyojo.jwt.JwtUtil;
 import com.sparta.javajyojo.service.KakaoService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,19 @@ public class KakaoController {
 
     @GetMapping("/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        String token = kakaoService.kakaoLogin(code);
+        List<String> token = kakaoService.kakaoLogin(code);
 
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        String access = token.get(0);
+        String refresh = token.get(1);
+
+        Cookie accessCookie = new Cookie(JwtUtil.ACCESS_TOKEN_HEADER, access.substring(7));
+        Cookie refreshCookie = new Cookie(JwtUtil.REFRESH_TOKEN_HEADER, refresh.substring(7));
+
+        accessCookie.setPath("/");
+        refreshCookie.setPath("/");
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
         return ResponseEntity.ok().body("로그인 성공");
     }
