@@ -27,9 +27,10 @@ public enum ErrorType {
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "인가되지 않은 접근입니다."),
 
     // REVIEW
-    DUPLICATE_Review_ID(HttpStatus.CONFLICT, "이미 리뷰가 존재합니다."),
+    DUPLICATE_REVIEW_ID(HttpStatus.CONFLICT, "이미 리뷰가 존재합니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰입니다."),
     NO_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
+    INVALID_ORDER_STATUS(HttpStatus.NOT_ACCEPTABLE, "리뷰를 생성 가능한 주문 상태가 아닙니다."),
 
     // JWT
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다. 다시 로그인 해주세요."),

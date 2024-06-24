@@ -6,6 +6,8 @@ import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
 import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.ErrorType;
+import com.sparta.javajyojo.enums.OrderStatus;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.exception.CustomException;
 import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
@@ -30,7 +32,10 @@ public class ReviewService {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
         if (findReviewByOrderAndUserId(order, order.getUser().getUserId())) {
-            throw new CustomException(ErrorType.DUPLICATE_Review_ID);
+            throw new CustomException(ErrorType.DUPLICATE_REVIEW_ID);
+        }
+        if (order.getOrderStatus() != OrderStatus.COMPLETED){
+            throw new CustomException(ErrorType.INVALID_ORDER_STATUS);
         }
 
         Review review = new Review(requestDto, order);
@@ -63,7 +68,7 @@ public class ReviewService {
     public void deleteReview(User user, Long reviewId) {
 
         Review review = getReviewById(reviewId);
-        if (user.getUserId() != review.getUserId()){
+        if (user.getRole() != UserRoleEnum.ADMIN && user.getUserId() != review.getUserId()){
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
 
