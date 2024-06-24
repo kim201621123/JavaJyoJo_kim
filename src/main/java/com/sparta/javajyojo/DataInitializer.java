@@ -1,9 +1,11 @@
 package com.sparta.javajyojo;
 
+import com.sparta.javajyojo.dto.ReviewRequestDto;
 import com.sparta.javajyojo.entity.Menu;
 import com.sparta.javajyojo.entity.Order;
 import com.sparta.javajyojo.entity.Review;
 import com.sparta.javajyojo.entity.User;
+import com.sparta.javajyojo.enums.OrderStatus;
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.repository.MenuRepository;
 import com.sparta.javajyojo.repository.OrderRepository;
@@ -33,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // 메뉴 데이터가 없는 경우에만 초기 데이터를 삽입됨
-        if (menuRepository.count() == 0) {
+        if (menuRepository.findAll().isEmpty()) {
             menuRepository.save(new Menu("후라이드", 14900));
             menuRepository.save(new Menu("양념", 14900));
             menuRepository.save(new Menu("후라이드반/양념반", 14900));
@@ -78,14 +80,78 @@ public class DataInitializer implements CommandLineRunner {
                     "다섯마디!",
                     UserRoleEnum.valueOf("USER")
             ));
+
+            if (orderRepository.findAll().isEmpty()) {
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("admin").orElseThrow(),
+                        "문 앞에 놔주세요",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.NEW,
+                        14900
+                        ));
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("equis3351").orElseThrow(),
+                        "문 앞에 놔주시오",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.COMPLETED,
+                        14900 * 2
+                ));
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("gaeun7").orElseThrow(),
+                        "문 앞에 놓아 주실래요?",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.UPDATED,
+                        14900 + 2000
+                ));
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("kim2016").orElseThrow(),
+                        "문 앞에 두고 가",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.CANCELLED,
+                        14900 + 4000
+                ));
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("Luel1197").orElseThrow(),
+                        "문 앞에 두고 가주세요",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.NEW,
+                        14900 + 5000
+                ));
+                orderRepository.save(new Order(
+                        userRepository.findByUsername("Luel1197").orElseThrow(),
+                        "문 앞에 두세요",
+                        "서울시 영등포구 여의도동 123-45",
+                        OrderStatus.CANCELLED,
+                        14900 + 5000
+                ));
+            }
+
+
+            if (reviewRepository.findAll().isEmpty()) {
+                ReviewRequestDto reviewRequestDto = new ReviewRequestDto();
+                reviewRequestDto.setReview("review Test");
+                reviewRequestDto.setRating(5L);
+                reviewRepository.save(new Review(
+                        reviewRequestDto,
+                        orderRepository.findByOrderId(1L)
+                ));
+                reviewRepository.save(new Review(
+                        reviewRequestDto,
+                        orderRepository.findByOrderId(2L)
+                ));
+                reviewRepository.save(new Review(
+                        reviewRequestDto,
+                        orderRepository.findByOrderId(3L)
+                ));
+                reviewRepository.save(new Review(
+                        reviewRequestDto,
+                        orderRepository.findByOrderId(4L)
+                ));
+            }
         }
 
-//        if (orderRepository.findAll().isEmpty()) {
-//            orderRepository.save(new Order());
-//        }
-//
-//        if (reviewRepository.findAll().isEmpty()) {
-//            reviewRepository.save(new Review());
-//        }
+
+
+
     }
 }
