@@ -16,7 +16,7 @@ public class AuthContorller {
     private final AuthService authService;
 
     @GetMapping("/auth/{id}")
-    public ResponseEntity<String> reissueToken(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<String> reissueToken(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) {
         String newAccessToken = authService.reissueAccessToken(id, request, response);
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }

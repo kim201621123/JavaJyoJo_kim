@@ -84,9 +84,9 @@ public class JwtUtil {
     }
 
     // JWT 토큰 substring
-    public String substringToken(String tokenValue){
+    public String substringToken(String tokenValue) {
         // 토큰인지 확인
-        if(StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)){
+        if(StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
         }
         logger.error("Not Found Token");
@@ -94,36 +94,36 @@ public class JwtUtil {
     }
 
     // 헤더에 토큰 전달
-    public void addJwtToHeader(HttpServletResponse response, String headerName, String token){
+    public void addJwtToHeader(HttpServletResponse response, String headerName, String token) {
         response.setHeader(headerName, token);
     }
 
     // 토큰에서 사용자 정보 가져오기
-    public Claims getUserInfoFromToken(String token){
+    public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     // 사용자에게서 Access 토큰 가져오기
-    public String getAccessTokenFromRequest(HttpServletRequest request){
+    public String getAccessTokenFromRequest(HttpServletRequest request) {
         return getTokenFromRequest(request,ACCESS_TOKEN_HEADER);
     }
 
     // 사용자에게서 Refresh 토큰 가져오기
-    public String getRefreshTokenFromRequest(HttpServletRequest request){
+    public String getRefreshTokenFromRequest(HttpServletRequest request) {
         return getTokenFromRequest(request,REFRESH_TOKEN_HEADER);
     }
 
     // HttpServletRequest 에서 토큰있는지 확인
-    public String getTokenFromRequest(HttpServletRequest request, String headerName){
+    public String getTokenFromRequest(HttpServletRequest request, String headerName) {
         String token = request.getHeader(headerName);
-        if(token != null && !token.isEmpty()){
+        if(token != null && !token.isEmpty()) {
             return token;
         }
         return null;
     }
 
     // 토큰 검증
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         } catch (SecurityException | MalformedJwtException | SignatureException e) {

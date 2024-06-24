@@ -34,7 +34,7 @@ public class ReviewService {
         if (findReviewByOrderAndUserId(order, order.getUser().getUserId())) {
             throw new CustomException(ErrorType.DUPLICATE_REVIEW_ID);
         }
-        if (order.getOrderStatus() != OrderStatus.COMPLETED){
+        if (order.getOrderStatus() != OrderStatus.COMPLETED) {
             throw new CustomException(ErrorType.INVALID_ORDER_STATUS);
         }
 
@@ -44,7 +44,7 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
-    public Review getReviewById(Long reviewId){
+    public Review getReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow(
                 () -> new CustomException(ErrorType.NOT_FOUND_REVIEW)
         );
@@ -54,8 +54,7 @@ public class ReviewService {
     public ReviewResponseDto updateReview(User user, Long reviewId, ReviewRequestDto requestDto) {
 
         Review review = getReviewById(reviewId);
-        if (user.getUserId() != review.getUserId()){
-            System.out.println(user.getUserId());
+        if (user.getUserId() != review.getUserId()) {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
 
@@ -68,7 +67,7 @@ public class ReviewService {
     public void deleteReview(User user, Long reviewId) {
 
         Review review = getReviewById(reviewId);
-        if (user.getRole() != UserRoleEnum.ADMIN && user.getUserId() != review.getUserId()){
+        if (user.getRole() != UserRoleEnum.ADMIN && user.getUserId() != review.getUserId()) {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
 
@@ -81,7 +80,7 @@ public class ReviewService {
         );
     }
 
-    private boolean findReviewByOrderAndUserId(Order order, Long userId){
+    private boolean findReviewByOrderAndUserId(Order order, Long userId) {
         return reviewRepository.findReviewByOrderAndUserId(order, userId).isPresent();
     }
 

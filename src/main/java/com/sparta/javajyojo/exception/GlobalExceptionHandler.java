@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleException(MethodArgumentNotValidException ex){
+    public ResponseEntity<?> handleException(MethodArgumentNotValidException ex) {
         ex.printStackTrace();
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder builder = new StringBuilder();

@@ -27,14 +27,14 @@ public class Review extends Timestamped{
 
     private Long rating;
 
-    public Review(ReviewRequestDto reviewRequestDto, Order order){
+    public Review(ReviewRequestDto reviewRequestDto, Order order) {
         this.order = order;
         this.userId = order.getUser().getUserId();
         this.review = reviewRequestDto.getReview();
         this.rating = reviewRequestDto.getRating();
     }
 
-    public void update(ReviewRequestDto reviewRequestDto){
+    public void update(ReviewRequestDto reviewRequestDto) {
         this.review = reviewRequestDto.getReview();
         this.rating = reviewRequestDto.getRating();
     }

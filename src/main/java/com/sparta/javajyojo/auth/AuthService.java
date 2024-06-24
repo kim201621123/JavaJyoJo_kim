@@ -24,7 +24,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void updateRefreshToken(Long id, String refreshToken){
+    public void updateRefreshToken(Long id, String refreshToken) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
         user.updateToken(refreshToken);
         userRepository.save(user);
@@ -40,20 +40,20 @@ public class AuthService {
         Claims accessClaims = jwtUtil.getUserInfoFromToken(headerAccessToken);
         Date accessExp = accessClaims.getExpiration();
         Date date = new Date();
-        if(!accessExp.before(date)){
+        if(!accessExp.before(date)) {
             throw new CustomException(ErrorType.VALID_ACCESS_TOKEN); // 토큰이 아직 유효 합니다.
         }
 
         // 2. refresh token 존재여부 확인
         String headerRefreshToken = jwtUtil.getRefreshTokenFromRequest(request);
 
-        if (headerRefreshToken == null){
+        if (headerRefreshToken == null) {
             throw new CustomException(ErrorType.INVALID_REFRESH_TOKEN); // 리프레시 토큰을 찾을 수 없습니다.
         }
 
         // 3. DB에 저장된 refresh token 이 동일한지 확인
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
-        if(!headerRefreshToken.equals(user.getRefreshToken())){
+        if(!headerRefreshToken.equals(user.getRefreshToken())) {
             throw new CustomException(ErrorType.INVALID_REFRESH_TOKEN); // 동일한 리프레시 토큰이 아닙니다.
         }
 
@@ -62,7 +62,7 @@ public class AuthService {
         Claims refreshClaims = jwtUtil.getUserInfoFromToken(headerRefreshToken);
         Date refreshExp = refreshClaims.getExpiration();
 
-        if (refreshExp.after(date)){
+        if (refreshExp.after(date)) {
             throw new CustomException(ErrorType.INVALID_REFRESH_TOKEN); // 리프레시 토큰 유효기간이 지났습니다.
         }
 
