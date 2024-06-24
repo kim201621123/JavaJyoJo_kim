@@ -139,7 +139,8 @@ public class OrderService {
         // 주문 엔티티 조회
         Order order = getOrderEntity(user, orderId);
 
-        if (user.getRole() != UserRoleEnum.ADMIN && order.getUser().getUserId() != user.getUserId()) {
+        if (user.getRole() != UserRoleEnum.ADMIN
+                && order.getUser().getUserId() != user.getUserId()) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
 
@@ -164,10 +165,13 @@ public class OrderService {
     // 주문 엔티티 조회 메서드
     private Order getOrderEntity(User user, Long orderId) {
         // 주문 조회
-        Order order = orderRepository.findByOrderId(orderId);
+        Order order = orderRepository.findByOrderId(orderId).orElseThrow(
+                () -> new CustomException(ErrorType.NOT_FOUND_ORDER)
+        );
 
         // 주문이 존재하지 않거나 사용자 권한이 없는 경우 예외 처리
-        if (order == null || (user.getRole() != UserRoleEnum.ADMIN && order.getUser().getUserId() != user.getUserId())) {
+        if (user.getRole() != UserRoleEnum.ADMIN
+                && order.getUser().getUserId() != user.getUserId()) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
 

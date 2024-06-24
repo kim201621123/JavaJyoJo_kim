@@ -67,7 +67,8 @@ public class ReviewService {
     public void deleteReview(User user, Long reviewId) {
 
         Review review = getReviewById(reviewId);
-        if (user.getRole() != UserRoleEnum.ADMIN && user.getUserId() != review.getUserId()) {
+        if (user.getRole() != UserRoleEnum.ADMIN
+                && user.getUserId() != review.getUserId()) {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
 
