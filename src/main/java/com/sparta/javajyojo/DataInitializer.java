@@ -1,16 +1,10 @@
 package com.sparta.javajyojo;
 
 import com.sparta.javajyojo.dto.ReviewRequestDto;
-import com.sparta.javajyojo.entity.Menu;
-import com.sparta.javajyojo.entity.Order;
-import com.sparta.javajyojo.entity.Review;
-import com.sparta.javajyojo.entity.User;
+import com.sparta.javajyojo.entity.*;
 import com.sparta.javajyojo.enums.OrderStatus;
 import com.sparta.javajyojo.enums.UserRoleEnum;
-import com.sparta.javajyojo.repository.MenuRepository;
-import com.sparta.javajyojo.repository.OrderRepository;
-import com.sparta.javajyojo.repository.ReviewRepository;
-import com.sparta.javajyojo.repository.UserRepository;
+import com.sparta.javajyojo.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -23,13 +17,17 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final PasswordHistoryRepository passwordHistoryRepository;
 
-    public DataInitializer(MenuRepository menuRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, OrderRepository orderRepository, ReviewRepository reviewRepository) {
+    public DataInitializer(MenuRepository menuRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, OrderRepository orderRepository, ReviewRepository reviewRepository, OrderDetailRepository orderDetailRepository, PasswordHistoryRepository passwordHistoryRepository) {
         this.menuRepository = menuRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
+        this.orderDetailRepository = orderDetailRepository;
+        this.passwordHistoryRepository = passwordHistoryRepository;
     }
 
     @Override
@@ -83,75 +81,147 @@ public class DataInitializer implements CommandLineRunner {
 
             if (orderRepository.findAll().isEmpty()) {
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("admin").orElseThrow(),
+                        userRepository.findByUsername("gaeun7").get(),
                         "문 앞에 놔주세요",
                         "서울시 영등포구 여의도동 123-45",
                         OrderStatus.NEW,
                         14900
                         ));
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("equis3351").orElseThrow(),
+                        userRepository.findByUsername("gaeun7").get(),
                         "문 앞에 놔주시오",
                         "서울시 영등포구 여의도동 123-45",
                         OrderStatus.COMPLETED,
                         14900 * 2
                 ));
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("gaeun7").orElseThrow(),
+                        userRepository.findByUsername("kim2016").get(),
                         "문 앞에 놓아 주실래요?",
-                        "서울시 영등포구 여의도동 123-45",
+                        "부산시 해운대구 우동 123-45",
                         OrderStatus.UPDATED,
-                        14900 + 2000
+                        14900
                 ));
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("kim2016").orElseThrow(),
+                        userRepository.findByUsername("kim2016").get(),
                         "문 앞에 두고 가",
-                        "서울시 영등포구 여의도동 123-45",
-                        OrderStatus.CANCELLED,
-                        14900 + 4000
+                        "부산시 해운대구 우동 123-45",
+                        OrderStatus.COMPLETED,
+                        14900 + 2000 + 2000
                 ));
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("Luel1197").orElseThrow(),
+                        userRepository.findByUsername("Luel1197").get(),
                         "문 앞에 두고 가주세요",
-                        "서울시 영등포구 여의도동 123-45",
-                        OrderStatus.NEW,
-                        14900 + 5000
+                        "충남 보령시 신흑동 123-45",
+                        OrderStatus.COMPLETED,
+                        (14900 + 5000 + 2000) * 2
                 ));
                 orderRepository.save(new Order(
-                        userRepository.findByUsername("Luel1197").orElseThrow(),
+                        userRepository.findByUsername("Luel1197").get(),
                         "문 앞에 두세요",
-                        "서울시 영등포구 여의도동 123-45",
+                        "충남 보령시 신흑동 123-45",
                         OrderStatus.CANCELLED,
-                        14900 + 5000
+                        2000
                 ));
             }
 
+            if (orderDetailRepository.findAll().isEmpty()) {
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(1L),
+                        menuRepository.findById(1L).get(),
+                        1
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(2L),
+                        menuRepository.findById(2L).get(),
+                        2
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(3L),
+                        menuRepository.findById(3L).get(),
+                        1
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(4L),
+                        menuRepository.findById(1L).get(),
+                        1
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(4L),
+                        menuRepository.findById(5L).get(),
+                        1
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(4L),
+                        menuRepository.findById(6L).get(),
+                        1
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(5L),
+                        menuRepository.findById(2L).get(),
+                        2
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(5L),
+                        menuRepository.findById(4L).get(),
+                        2
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(5L),
+                        menuRepository.findById(6L).get(),
+                        2
+                ));
+                orderDetailRepository.save(new OrderDetail(
+                        orderRepository.findByOrderId(6L),
+                        menuRepository.findById(6L).get(),
+                        1
+                ));
+            }
 
             if (reviewRepository.findAll().isEmpty()) {
-                ReviewRequestDto reviewRequestDto = new ReviewRequestDto();
-                reviewRequestDto.setReview("review Test");
-                reviewRequestDto.setRating(5L);
+                ReviewRequestDto requestDto = new ReviewRequestDto();
+                requestDto.setReview("review Test1");
+                requestDto.setRating(5L);
                 reviewRepository.save(new Review(
-                        reviewRequestDto,
-                        orderRepository.findByOrderId(1L)
-                ));
-                reviewRepository.save(new Review(
-                        reviewRequestDto,
+                        requestDto,
                         orderRepository.findByOrderId(2L)
                 ));
+                requestDto.setReview("review Test2");
+                requestDto.setRating(5L);
                 reviewRepository.save(new Review(
-                        reviewRequestDto,
-                        orderRepository.findByOrderId(3L)
-                ));
-                reviewRepository.save(new Review(
-                        reviewRequestDto,
+                        requestDto,
                         orderRepository.findByOrderId(4L)
+                ));
+                requestDto.setReview("review Test3");
+                requestDto.setRating(4L);
+                reviewRepository.save(new Review(
+                        requestDto,
+                        orderRepository.findByOrderId(5L)
+                ));
+            }
+
+            if (passwordHistoryRepository.findAll().isEmpty()) {
+                passwordHistoryRepository.save(new PasswordHistory(
+                        userRepository.findById(3L).get(),
+                        passwordEncoder.encode("Bqwer1234!")
+                ));
+                passwordHistoryRepository.save(new PasswordHistory(
+                        userRepository.findById(3L).get(),
+                        passwordEncoder.encode("Cqwer1234!")
+                ));
+                passwordHistoryRepository.save(new PasswordHistory(
+                        userRepository.findById(3L).get(),
+                        passwordEncoder.encode("Dqwer1234!")
+                ));
+                passwordHistoryRepository.save(new PasswordHistory(
+                        userRepository.findById(3L).get(),
+                        passwordEncoder.encode("Eqwer1234!")
+                ));
+                passwordHistoryRepository.save(new PasswordHistory(
+                        userRepository.findById(4L).get(),
+                        passwordEncoder.encode("Eqwer1234!")
                 ));
             }
         }
-
-
-
 
     }
 }
