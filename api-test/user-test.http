@@ -1,0 +1,39 @@
+### 유저 회원가입
+POST http://localhost:8080/users/sign-up
+Content-Type: application/json
+
+{
+  "username": "supplier0",
+  "password": "Supplier0!",
+  "name": "판매자",
+  "intro": "supplier@gmail.com",
+}
+
+### 유저 로그인
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "username": "supplier0",
+  "password": "Supplier0!"
+}
+
+### 회원탈퇴
+DELETE http://localhost:8080/users/sign-out
+
+### 로그아웃
+DELETE http://localhost:8080/users/log-out
+
+### 회원 프로필 조회
+GET http://localhost:8080/users
+
+### 회원 프로필 수정
+PATCH http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "password": "Supplier0!",
+  "newPassword": "Supplier1!",
+  "name": null,
+  "intro": null
+}

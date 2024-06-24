@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     User user = optionalUser.get();
 
                     // 로그인 시도 한 user 가 탈퇴 상태인지 확인 (지금은 임시로 user) + 비밀번호 확인
-                    if (UserRoleEnum.WITHOUT.equals(user.getRole())) {
+                    if (UserRoleEnum.WITHDRAW.equals(user.getRole())) {
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().write("탈퇴한 계정입니다.");
                     } else if (user.getPassword().equals(loginRequestDto.getPassword())) {

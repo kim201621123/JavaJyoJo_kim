@@ -56,7 +56,7 @@ public class User extends Timestamped implements Serializable {
     }
 
     public void signOut() {
-        this.role = UserRoleEnum.WITHOUT;
+        this.role = UserRoleEnum.WITHDRAW;
         this.refreshToken = null;
     }
 
