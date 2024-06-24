@@ -8,7 +8,6 @@ import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.repository.UserRepository;
 import com.sparta.javajyojo.security.UserDetailsImpl;
-import com.sparta.javajyojo.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,7 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 시도");
 
         // 입력받은 요청이 json 형태인지 확인
-        if("application/json".equals(request.getContentType())){
+        if("application/json".equals(request.getContentType())) {
             try {
                 // 요청 받은 json -> 객체로 변환
                 LoginRequestDto loginRequestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
@@ -61,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 Optional<User> optionalUser = userRepository.findByUsername(loginRequestDto.getUsername());
 
                 // 회원가입 된 username 이 있는지 확인
-                if(optionalUser.isPresent()){
+                if(optionalUser.isPresent()) {
                     User user = optionalUser.get();
 
                     // 로그인 시도 한 user 가 탈퇴 상태인지 확인 (지금은 임시로 user) + 비밀번호 확인

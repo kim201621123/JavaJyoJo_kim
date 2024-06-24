@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String accessToken = jwtUtil.getAccessTokenFromRequest(request);
 
         // 토큰 값이 있는지 확인
-        if(StringUtils.hasText(accessToken)){
+        if(StringUtils.hasText(accessToken)) {
 
             // 있으면 JWT 토큰 substring (가공)
             accessToken = jwtUtil.substringToken(accessToken);

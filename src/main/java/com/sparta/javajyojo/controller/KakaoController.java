@@ -1,12 +1,11 @@
 package com.sparta.javajyojo.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sparta.javajyojo.dto.KakaoTokenDto;
 import com.sparta.javajyojo.jwt.JwtUtil;
 import com.sparta.javajyojo.service.KakaoService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -25,10 +26,10 @@ public class KakaoController {
 
     @GetMapping("/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        List<String> token = kakaoService.kakaoLogin(code);
+        KakaoTokenDto kakaoTokenDto = kakaoService.kakaoLogin(code);
 
-        String access = token.get(0);
-        String refresh = token.get(1);
+        String access = kakaoTokenDto.getAccessToken();
+        String refresh = kakaoTokenDto.getRefreshToken();
 
         Cookie accessCookie = new Cookie(JwtUtil.ACCESS_TOKEN_HEADER, access.substring(7));
         Cookie refreshCookie = new Cookie(JwtUtil.REFRESH_TOKEN_HEADER, refresh.substring(7));
