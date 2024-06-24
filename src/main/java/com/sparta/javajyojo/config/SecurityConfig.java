@@ -1,9 +1,10 @@
 package com.sparta.javajyojo.config;
 
+import com.sparta.javajyojo.auth.AuthService;
 import com.sparta.javajyojo.jwt.JwtAuthenticationFilter;
 import com.sparta.javajyojo.jwt.JwtAuthorizationFilter;
 import com.sparta.javajyojo.jwt.JwtUtil;
-import com.sparta.javajyojo.service.UserService;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +30,13 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    private final UserService userService;
+    private final AuthService authService;
 
-    public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService, AuthenticationConfiguration authenticationConfiguration, @Lazy UserService userService) {
+    public SecurityConfig(JwtUtil jwtUtil, UserDetailsService userDetailsService, AuthenticationConfiguration authenticationConfiguration, @Lazy AuthService authService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.authenticationConfiguration = authenticationConfiguration;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @Bean
@@ -45,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userService);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil,authService);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }

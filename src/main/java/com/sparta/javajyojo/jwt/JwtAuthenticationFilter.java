@@ -2,6 +2,7 @@ package com.sparta.javajyojo.jwt;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.javajyojo.auth.AuthService;
 import com.sparta.javajyojo.dto.LoginRequestDto;
 import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
@@ -28,7 +29,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private  final JwtUtil jwtUtil;
 
     // refreshToken 저장을 위해
-    UserService userService;
+    AuthService authService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,9 +39,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserService userService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, AuthService authService) {
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
+        this.authService = authService;
         setFilterProcessesUrl("/users/login");
     }
 
@@ -99,17 +100,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-        String accessToken = jwtUtil.createToken(username, role, jwtUtil.ACCESS_TOKEN_EXPIRATION, "access");
-        String refreshToken = jwtUtil.createToken(username, role, jwtUtil.REFRESH_TOKEN_EXPIRATION, "refresh");
+        String accessToken = jwtUtil.createAccessToken(username, role);
+        String refreshToken = jwtUtil.createRefreshToken();
 
         // 토큰을 헤더에 전달
-        jwtUtil.addJwtToHeader(response, accessToken, refreshToken);
+        jwtUtil.addJwtToHeader(response, JwtUtil.ACCESS_TOKEN_HEADER, accessToken);
 
         // 헤더 username 추가
         response.setHeader("username", username);
 
-        // refreshToken Entity 에 저장 (검증 필요)
-        userService.updateRefreshToken(id, refreshToken);
+        // refreshToken Entity 에 저장
+        authService.updateRefreshToken(id, refreshToken);
 
         // 확인용
         log.info("accessToken: " + accessToken);

@@ -34,9 +34,9 @@ public enum ErrorType {
     // JWT
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다. 다시 로그인 해주세요."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다. 다시 로그인 해주세요."),
+    VALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 아직 유효합니다."),
 
-    REQUIRES_LOGIN(HttpStatus.LOCKED, "로그인이 필요한 서비스입니다.")
-    ;
+    REQUIRES_LOGIN(HttpStatus.LOCKED, "로그인이 필요한 서비스입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
