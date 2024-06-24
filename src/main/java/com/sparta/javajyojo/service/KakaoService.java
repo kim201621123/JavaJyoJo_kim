@@ -3,6 +3,7 @@ package com.sparta.javajyojo.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.javajyojo.dto.KakaoTokenDto;
 import com.sparta.javajyojo.dto.KakaoUserInfoDto;
 import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
@@ -36,7 +37,7 @@ public class KakaoService {
     private final RestTemplate restTemplate; // Bean 수동 등록 -> RestTemplateConfig
     private final JwtUtil jwtUtil;
 
-    public List<String> kakaoLogin(String code) throws JsonProcessingException {
+    public KakaoTokenDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String kakaoAccessToken = getToken(code);
 
@@ -51,9 +52,8 @@ public class KakaoService {
         String refreshToken = jwtUtil.createRefreshToken();
 
         List<String> tokenList = new ArrayList<>();
-        tokenList.add(accessToken);
-        tokenList.add(refreshToken);
-        return tokenList;
+
+        return new KakaoTokenDto(accessToken, refreshToken);
     }
 
     private String getToken(String code) throws JsonProcessingException {
