@@ -3,6 +3,7 @@ package com.sparta.javajyojo.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.enums.OrderStatus;
+import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.Getter;
