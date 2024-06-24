@@ -3,14 +3,14 @@ package com.sparta.javajyojo.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.javajyojo.dto.KakaoTokenDto;
 import com.sparta.javajyojo.dto.KakaoUserInfoDto;
 import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.jwt.JwtUtil;
 import com.sparta.javajyojo.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
@@ -23,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j(topic = "KAKAO Login")
@@ -35,7 +37,13 @@ public class KakaoService {
     private final RestTemplate restTemplate; // Bean 수동 등록 -> RestTemplateConfig
     private final JwtUtil jwtUtil;
 
-    public List<String> kakaoLogin(String code) throws JsonProcessingException {
+    @Value("~~~id")
+    private String clientId;
+
+    @Value("~~~uri")
+    private String redirectUri;
+
+    public KakaoTokenDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String kakaoAccessToken = getToken(code);
 
@@ -50,9 +58,8 @@ public class KakaoService {
         String refreshToken = jwtUtil.createRefreshToken();
 
         List<String> tokenList = new ArrayList<>();
-        tokenList.add(accessToken);
-        tokenList.add(refreshToken);
-        return tokenList;
+
+        return new KakaoTokenDto(accessToken, refreshToken);
     }
 
     private String getToken(String code) throws JsonProcessingException {
@@ -72,8 +79,8 @@ public class KakaoService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "f0aef2eaa5923c354c2c2afa83cb3d02");
-        body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
+        body.add("client_id", clientId);
+        body.add("redirect_uri", redirectUri);
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity

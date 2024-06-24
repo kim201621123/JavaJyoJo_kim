@@ -1,3 +1,4 @@
+
 package com.sparta.javajyojo.service;
 
 import com.sparta.javajyojo.dto.OrderRequestDto;
@@ -68,7 +69,6 @@ public class OrderService {
         return new OrderResponseDto(order, order.getOrderDetails());
     }
 
-    // 주문 업데이트 메서드
     @Transactional
     public OrderResponseDto updateOrder(User user, Long orderId, OrderRequestDto orderRequestDto) {
         log.info("주문 ID {}를 업데이트합니다.", orderId);
@@ -84,16 +84,14 @@ public class OrderService {
         // 관리자일 경우 주문 상세 내역도 함께 수정 가능
         if (user.getRole() == UserRoleEnum.ADMIN) {
             // 배송 요청 및 주소 업데이트
-            order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-            order.setAddress(orderRequestDto.getAddress());
-
-            // 주문 총 금액 재계산
-            int totalPrice = calculateTotalPrice(orderRequestDto);
-            order.setTotalPrice(totalPrice);
+            order.update(orderRequestDto.getDeliveryRequest(), orderRequestDto.getAddress(),
+                    calculateTotalPrice(orderRequestDto));
+            // 총 구매 금액 업데이트
+            order.setTotalPrice(calculateTotalPrice(orderRequestDto));
         } else {
             // 일반 사용자는 배송 요청 및 주소만 수정 가능
-            order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-            order.setAddress(orderRequestDto.getAddress());
+            order.update(orderRequestDto.getDeliveryRequest(), orderRequestDto.getAddress(),
+                    calculateTotalPrice(orderRequestDto));
         }
 
         // 업데이트된 주문 저장
@@ -102,6 +100,7 @@ public class OrderService {
         // 업데이트된 주문 상세 내역 저장
         List<OrderDetail> orderDetails = saveOrderDetails(orderRequestDto, order);
 
+        // 다시 계산된 총 주문 금액으로 OrderResponseDto 생성하여 반환
         return new OrderResponseDto(order, orderDetails);
     }
 
@@ -139,35 +138,23 @@ public class OrderService {
         // 주문 엔티티 조회
         Order order = getOrderEntity(user, orderId);
 
-        if (user.getRole() != UserRoleEnum.ADMIN && order.getUser().getUserId() != user.getUserId()) {
+        if (user.getRole() != UserRoleEnum.ADMIN
+                && order.getUser().getUserId() != user.getUserId()) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
-
-        // 주문이 취소 상태인 경우 삭제 불가
-        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
-            throw new CustomException(ErrorType.ORDER_CANNOT_BE_DELETED_CANCELLED);
-        }
-
-        // 주문 상태 확인 및 예외 처리
-        switch (order.getOrderStatus()) {
-            case PROCESSING:
-                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_PROCESSING);
-            case COMPLETED:
-                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_COMPLETED);
-            default:
-                // 주문 상태를 CANCELLED로 변경
-                order.setOrderStatus(OrderStatus.CANCELLED);
-                orderRepository.save(order);
-        }
+        order.delete();
     }
 
     // 주문 엔티티 조회 메서드
     private Order getOrderEntity(User user, Long orderId) {
         // 주문 조회
-        Order order = orderRepository.findByOrderId(orderId);
+        Order order = orderRepository.findByOrderId(orderId).orElseThrow(
+                () -> new CustomException(ErrorType.NOT_FOUND_ORDER)
+        );
 
         // 주문이 존재하지 않거나 사용자 권한이 없는 경우 예외 처리
-        if (order == null || (user.getRole() != UserRoleEnum.ADMIN && order.getUser().getUserId() != user.getUserId())) {
+        if (user.getRole() != UserRoleEnum.ADMIN
+                && order.getUser().getUserId() != user.getUserId()) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
 
