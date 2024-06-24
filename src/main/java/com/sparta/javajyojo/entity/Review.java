@@ -34,6 +34,13 @@ public class Review extends Timestamped{
         this.rating = reviewRequestDto.getRating();
     }
 
+    public Review(Order order, Long userId, String review, Long rating) {
+        this.order = order;
+        this.userId = userId;
+        this.review = review;
+        this.rating = rating;
+    }
+
     public void update(ReviewRequestDto reviewRequestDto) {
         this.review = reviewRequestDto.getReview();
         this.rating = reviewRequestDto.getRating();
