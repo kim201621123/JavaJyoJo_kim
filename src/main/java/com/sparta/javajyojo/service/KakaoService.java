@@ -37,6 +37,12 @@ public class KakaoService {
     private final RestTemplate restTemplate; // Bean 수동 등록 -> RestTemplateConfig
     private final JwtUtil jwtUtil;
 
+    @Value("~~~id")
+    private String clientId;
+
+    @Value("~~~uri")
+    private String redirectUri;
+
     public KakaoTokenDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String kakaoAccessToken = getToken(code);
@@ -73,8 +79,8 @@ public class KakaoService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "f0aef2eaa5923c354c2c2afa83cb3d02");
-        body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
+        body.add("client_id", clientId);
+        body.add("redirect_uri", redirectUri);
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
