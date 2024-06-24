@@ -30,8 +30,8 @@ public class KakaoController {
         String access = token.get(0);
         String refresh = token.get(1);
 
-        Cookie accessCookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, access.substring(7));
-        Cookie refreshCookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, refresh.substring(7));
+        Cookie accessCookie = new Cookie(JwtUtil.ACCESS_TOKEN_HEADER, access.substring(7));
+        Cookie refreshCookie = new Cookie(JwtUtil.REFRESH_TOKEN_HEADER, refresh.substring(7));
 
         accessCookie.setPath("/");
         refreshCookie.setPath("/");
