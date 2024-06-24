@@ -8,6 +8,8 @@ import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.jwt.JwtUtil;
 import com.sparta.javajyojo.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -33,21 +35,24 @@ public class KakaoService {
     private final RestTemplate restTemplate; // Bean 수동 등록 -> RestTemplateConfig
     private final JwtUtil jwtUtil;
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    public List<String> kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getToken(code);
+        String kakaoAccessToken = getToken(code);
 
         // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken);
 
         // 3. 필요시에 회원가입
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-//        String createToken = jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
-//        return createToken;
+        String accessToken = jwtUtil.createAccessToken(kakaoUser.getUsername(),UserRoleEnum.USER, jwtUtil.ACCESS_TOKEN_EXPIRATION, "access");
+        String refreshToken = jwtUtil.createRefreshToken();
 
-        return null;
+        List<String> tokenList = new ArrayList<>();
+        tokenList.add(accessToken);
+        tokenList.add(refreshToken);
+        return tokenList;
     }
 
     private String getToken(String code) throws JsonProcessingException {
