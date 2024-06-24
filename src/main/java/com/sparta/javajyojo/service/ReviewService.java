@@ -32,7 +32,7 @@ public class ReviewService {
             throw new CustomException(ErrorType.NO_AUTHENTICATION);
         }
         if (findReviewByOrderAndUserId(order, order.getUser().getUserId())) {
-            throw new CustomException(ErrorType.DUPLICATE_Review_ID);
+            throw new CustomException(ErrorType.DUPLICATE_REVIEW_ID);
         }
         if (order.getOrderStatus() != OrderStatus.COMPLETED){
             throw new CustomException(ErrorType.INVALID_ORDER_STATUS);
