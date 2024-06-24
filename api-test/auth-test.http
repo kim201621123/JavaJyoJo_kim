@@ -1,0 +1,2 @@
+### 토큰 반환
+GET http://localhost:8080/auth/7

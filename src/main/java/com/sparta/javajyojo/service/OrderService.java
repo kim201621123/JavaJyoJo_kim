@@ -77,8 +77,8 @@ public class OrderService {
         Order order = getOrderEntity(user, orderId);
 
         // 주문이 취소 상태인 경우 수정 불가
-        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
-            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELLED);
+        if (order.getOrderStatus() == OrderStatus.CANCELED) {
+            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELED);
         }
 
         // 관리자일 경우 주문 상세 내역도 함께 수정 가능
@@ -115,8 +115,8 @@ public class OrderService {
         Order order = getOrderEntity(user, orderId);
 
         // 주문이 취소 상태인 경우 상태 업데이트 불가
-        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
-            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELLED);
+        if (order.getOrderStatus() == OrderStatus.CANCELED) {
+            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELED);
         }
 
         // 주문 상태 업데이트
