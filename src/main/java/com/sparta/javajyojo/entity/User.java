@@ -2,6 +2,7 @@ package com.sparta.javajyojo.entity;
 
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -53,6 +54,12 @@ public class User extends Timestamped implements Serializable {
         this.email = email;
         this.role = role;
         this.kakaoId = kakaoId;
+    }
+
+    @Builder
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public void signOut() {
