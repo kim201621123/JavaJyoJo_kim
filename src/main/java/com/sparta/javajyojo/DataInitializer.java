@@ -43,7 +43,7 @@
 //        List<User> userList =
 //                List.of(
 //                        new User("admin", passwordEncoder.encode("A1234qwer!"), "손호찬", "한마디!", UserRoleEnum.valueOf("ADMIN")),
-//                        new User("equis3351", passwordEncoder.encode("A1234qwer!"), "남현", "두마디!", UserRoleEnum.valueOf("WITHOUT")),
+//                        new User("equis3351", passwordEncoder.encode("A1234qwer!"), "남현", "두마디!", UserRoleEnum.valueOf("WITHDRAW")),
 //                        new User("gaeun7", passwordEncoder.encode("A1234qwer!"), "김가은", "세마디!", UserRoleEnum.valueOf("USER")),
 //                        new User("kim2016", passwordEncoder.encode("A1234qwer!"), "김현성", "네마디!", UserRoleEnum.valueOf("USER")),
 //                        new User("ael1197", passwordEncoder.encode("A1234qwer!"), "손아엘", "다섯마디!", UserRoleEnum.valueOf("USER"))
@@ -86,7 +86,7 @@
 //                                userRepository.findByUsername("ael1197").get(),
 //                                "문 앞에 두세요",
 //                                "충남 보령시 신흑동 123-45",
-//                                OrderStatus.CANCELLED,
+//                                OrderStatus.CANCELED,
 //                                2000)
 //                );
 //        orderRepository.saveAll(orderList);
