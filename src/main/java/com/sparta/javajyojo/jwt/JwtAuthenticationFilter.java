@@ -8,7 +8,6 @@ import com.sparta.javajyojo.entity.User;
 import com.sparta.javajyojo.enums.UserRoleEnum;
 import com.sparta.javajyojo.repository.UserRepository;
 import com.sparta.javajyojo.security.UserDetailsImpl;
-import com.sparta.javajyojo.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

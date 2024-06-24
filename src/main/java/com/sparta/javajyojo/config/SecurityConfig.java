@@ -74,6 +74,7 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정 (이게 왜 필요할까?)
                 .requestMatchers("/users/sign-up").permitAll()
                 .requestMatchers("/users/login").permitAll() // /users/** 로 시작하는 요청 모두 접근 허가 (스웨거의 접근도 여기서 허용 가능) (ex 특정 권한이 있는 사용자만 접근 가능하게도 설정 가능)
+                .requestMatchers("/auth/1").permitAll()
                 .anyRequest().authenticated() // 위의 요청 제외 모든 요청은 인증처리가 필요
             );
 
