@@ -3,7 +3,6 @@ package com.sparta.javajyojo.dto;
 import com.sparta.javajyojo.enums.OrderStatus;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

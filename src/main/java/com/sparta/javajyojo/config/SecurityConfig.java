@@ -4,7 +4,6 @@ import com.sparta.javajyojo.auth.AuthService;
 import com.sparta.javajyojo.jwt.JwtAuthenticationFilter;
 import com.sparta.javajyojo.jwt.JwtAuthorizationFilter;
 import com.sparta.javajyojo.jwt.JwtUtil;
-
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
