@@ -1,6 +1,7 @@
 package com.sparta.javajyojo.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sparta.javajyojo.dto.KakaoTokenDto;
 import com.sparta.javajyojo.jwt.JwtUtil;
 import com.sparta.javajyojo.service.KakaoService;
 import jakarta.servlet.http.Cookie;
@@ -25,10 +26,10 @@ public class KakaoController {
 
     @GetMapping("/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        List<String> token = kakaoService.kakaoLogin(code);
+        KakaoTokenDto kakaoTokenDto = kakaoService.kakaoLogin(code);
 
-        String access = token.get(0);
-        String refresh = token.get(1);
+        String access = kakaoTokenDto.getAccessToken();
+        String refresh = kakaoTokenDto.getRefreshToken();
 
         Cookie accessCookie = new Cookie(JwtUtil.ACCESS_TOKEN_HEADER, access.substring(7));
         Cookie refreshCookie = new Cookie(JwtUtil.REFRESH_TOKEN_HEADER, refresh.substring(7));
