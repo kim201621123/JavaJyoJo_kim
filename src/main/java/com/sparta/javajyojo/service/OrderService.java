@@ -77,13 +77,6 @@ public class OrderService {
         Order order = getOrderEntity(user, orderId);
 
         if (user.getRole() == UserRoleEnum.ADMIN) {
-            // 주문 상태 업데이트
-            if (orderRequestDto.getOrderStatus() != null) {
-                order.setOrderStatus(orderRequestDto.getOrderStatus());
-            } else {
-                throw new CustomException(ErrorType.BAD_REQUEST);
-            }
-
             // 배송 요청 및 주소 업데이트
             order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
             order.setAddress(orderRequestDto.getAddress());
@@ -103,6 +96,29 @@ public class OrderService {
         List<OrderDetail> orderDetails = saveOrderDetails(orderRequestDto, order);
 
         return new OrderResponseDto(order, orderDetails);
+    }
+
+    // 관리자 전용 주문 상태 업데이트 메서드
+    @Transactional
+    public OrderResponseDto updateOrderStatus(User user, Long orderId, OrderStatus orderStatus) {
+        if (user.getRole() != UserRoleEnum.ADMIN) {
+            throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
+        }
+
+        // 주문 엔티티 조회
+        Order order = getOrderEntity(user, orderId);
+
+        // 주문 상태 업데이트
+        if (orderStatus != null) {
+            order.setOrderStatus(orderStatus);
+        } else {
+            throw new CustomException(ErrorType.BAD_REQUEST);
+        }
+
+        // 업데이트된 주문 저장
+        orderRepository.save(order);
+
+        return new OrderResponseDto(order, order.getOrderDetails());
     }
 
     // 주문 삭제 메서드

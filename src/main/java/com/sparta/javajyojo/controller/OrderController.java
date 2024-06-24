@@ -74,6 +74,17 @@ public class OrderController {
         return ResponseEntity.ok().body(orderService.updateOrder(userDetails.getUser(), orderId, orderRequestDto));
     }
 
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<OrderResponseDto> updateOrderStatus(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long orderId,
+            @RequestBody OrderRequestDto orderRequestDto) {
+
+        validateUser(userDetails);
+
+        return ResponseEntity.ok().body(orderService.updateOrderStatus(userDetails.getUser(), orderId, orderRequestDto.getOrderStatus()));
+    }
+
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> deleteOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
