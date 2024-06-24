@@ -81,20 +81,12 @@ public class OrderService {
             throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELLED);
         }
 
-        // 관리자일 경우 주문 상세 내역도 함께 수정 가능
-        if (user.getRole() == UserRoleEnum.ADMIN) {
-            // 배송 요청 및 주소 업데이트
-            order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-            order.setAddress(orderRequestDto.getAddress());
+        // 배송 요청 및 주소 업데이트
+        order.update(orderRequestDto.getDeliveryRequest(), orderRequestDto.getAddress(),
+                calculateTotalPrice(orderRequestDto));
 
-            // 주문 총 금액 재계산
-            int totalPrice = calculateTotalPrice(orderRequestDto);
-            order.setTotalPrice(totalPrice);
-        } else {
-            // 일반 사용자는 배송 요청 및 주소만 수정 가능
-            order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
-            order.setAddress(orderRequestDto.getAddress());
-        }
+        // 총 구매 금액 업데이트
+        order.setTotalPrice(calculateTotalPrice(orderRequestDto));
 
         // 업데이트된 주문 저장
         orderRepository.save(order);
@@ -102,8 +94,10 @@ public class OrderService {
         // 업데이트된 주문 상세 내역 저장
         List<OrderDetail> orderDetails = saveOrderDetails(orderRequestDto, order);
 
+        // 다시 계산된 총 주문 금액으로 OrderResponseDto 생성하여 반환
         return new OrderResponseDto(order, orderDetails);
     }
+
 
     // 관리자 전용 주문 상태 업데이트 메서드
     @Transactional
@@ -142,23 +136,7 @@ public class OrderService {
         if (user.getRole() != UserRoleEnum.ADMIN && order.getUser().getUserId() != user.getUserId()) {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
-
-        // 주문이 취소 상태인 경우 삭제 불가
-        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
-            throw new CustomException(ErrorType.ORDER_CANNOT_BE_DELETED_CANCELLED);
-        }
-
-        // 주문 상태 확인 및 예외 처리
-        switch (order.getOrderStatus()) {
-            case PROCESSING:
-                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_PROCESSING);
-            case COMPLETED:
-                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_COMPLETED);
-            default:
-                // 주문 상태를 CANCELLED로 변경
-                order.setOrderStatus(OrderStatus.CANCELLED);
-                orderRepository.save(order);
-        }
+        order.delete();
     }
 
     // 주문 엔티티 조회 메서드
