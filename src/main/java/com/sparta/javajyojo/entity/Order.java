@@ -1,7 +1,10 @@
 package com.sparta.javajyojo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sparta.javajyojo.enums.ErrorType;
 import com.sparta.javajyojo.enums.OrderStatus;
+import com.sparta.javajyojo.enums.UserRoleEnum;
+import com.sparta.javajyojo.exception.CustomException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,4 +53,30 @@ public class Order extends Timestamped {
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
     }
+
+    public void update(String deliveryRequest, String address, int totalPrice) {
+        this.deliveryRequest = deliveryRequest;
+        this.address = address;
+
+        // 관리자일 경우 주문 상세 내역도 함께 수정 가능
+        if (this.user.getRole() == UserRoleEnum.ADMIN) {
+            this.totalPrice = totalPrice;
+        }
+    }
+
+    public void delete() {
+        // 주문 상태 확인 및 예외 처리
+        switch (orderStatus) {
+            case PROCESSING:
+                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_PROCESSING);
+            case COMPLETED:
+                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_COMPLETED);
+            case CANCELLED:
+                throw new CustomException(ErrorType.ORDER_CANNOT_BE_DELETED_CANCELLED);
+            default:
+                // 주문 상태를 CANCELLED로 변경
+                orderStatus = OrderStatus.CANCELLED;
+        }
+    }
+
 }
