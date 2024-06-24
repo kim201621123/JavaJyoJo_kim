@@ -13,12 +13,10 @@ public class OrderRequestDto {
     private List<OrderDetailDto> orderDetails;
     private OrderStatus orderStatus;
 
-    // Getter for orderDetails
     public List<OrderDetailDto> getOrderDetails() {
         return orderDetails;
     }
 
-    // Setter for orderDetails
     public void setOrderDetails(List<OrderDetailDto> orderDetails) {
         this.orderDetails = orderDetails;
     }

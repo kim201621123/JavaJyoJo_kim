@@ -21,12 +21,14 @@ public enum ErrorType {
     PASSWORD_RECENTLY_USED(HttpStatus.LOCKED, "최근에 사용한 비밀번호는 사용할 수 없습니다."),
 
     // ORDER
-    INVALID_MENU_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 메뉴 ID입니다."),
     NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다."),
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "인가되지 않은 접근입니다."),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST,"주문 상태는 필수 입력 사항입니다."),
-
+    BAD_REQUEST(HttpStatus.BAD_REQUEST,"주문 상태를 입력해주세요."),
+    ORDER_CANNOT_BE_CANCELLED_PROCESSING(HttpStatus.BAD_REQUEST,"이미 주문이 진행중이기 때문에 취소할 수 없습니다."),
+    ORDER_CANNOT_BE_CANCELLED_COMPLETED(HttpStatus.BAD_REQUEST,"이미 주문이 완료되었기 때문에 취소할 수 없습니다."),
+    ORDER_CANNOT_BE_MODIFIED_CANCELLED(HttpStatus.BAD_REQUEST,"이미 주문이 취소되었기 때문에 주문을 수정할 수 없습니다."),
+    ORDER_CANNOT_BE_DELETED_CANCELLED(HttpStatus.BAD_REQUEST,"이미 주문이 취소되었습니다."),
 
     // REVIEW
     DUPLICATE_Review_ID(HttpStatus.CONFLICT, "이미 리뷰가 존재합니다."),

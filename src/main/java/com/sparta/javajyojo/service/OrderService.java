@@ -76,6 +76,12 @@ public class OrderService {
         // 주문 엔티티 조회
         Order order = getOrderEntity(user, orderId);
 
+        // 주문이 취소 상태인 경우 수정 불가
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELLED);
+        }
+
+        // 관리자일 경우 주문 상세 내역도 함께 수정 가능
         if (user.getRole() == UserRoleEnum.ADMIN) {
             // 배송 요청 및 주소 업데이트
             order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
@@ -85,6 +91,7 @@ public class OrderService {
             int totalPrice = calculateTotalPrice(orderRequestDto);
             order.setTotalPrice(totalPrice);
         } else {
+            // 일반 사용자는 배송 요청 및 주소만 수정 가능
             order.setDeliveryRequest(orderRequestDto.getDeliveryRequest());
             order.setAddress(orderRequestDto.getAddress());
         }
@@ -107,6 +114,11 @@ public class OrderService {
 
         // 주문 엔티티 조회
         Order order = getOrderEntity(user, orderId);
+
+        // 주문이 취소 상태인 경우 상태 업데이트 불가
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new CustomException(ErrorType.ORDER_CANNOT_BE_MODIFIED_CANCELLED);
+        }
 
         // 주문 상태 업데이트
         if (orderStatus != null) {
@@ -131,11 +143,25 @@ public class OrderService {
             throw new CustomException(ErrorType.UNAUTHORIZED_ACCESS);
         }
 
-        // 주문 삭제
-        orderRepository.delete(order);
+        // 주문이 취소 상태인 경우 삭제 불가
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new CustomException(ErrorType.ORDER_CANNOT_BE_DELETED_CANCELLED);
+        }
+
+        // 주문 상태 확인 및 예외 처리
+        switch (order.getOrderStatus()) {
+            case PROCESSING:
+                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_PROCESSING);
+            case COMPLETED:
+                throw new CustomException(ErrorType.ORDER_CANNOT_BE_CANCELLED_COMPLETED);
+            default:
+                // 주문 상태를 CANCELLED로 변경
+                order.setOrderStatus(OrderStatus.CANCELLED);
+                orderRepository.save(order);
+        }
     }
 
-    //  주문 엔티티 조회 메서드
+    // 주문 엔티티 조회 메서드
     private Order getOrderEntity(User user, Long orderId) {
         // 주문 조회
         Order order = orderRepository.findByOrderId(orderId);
@@ -148,7 +174,7 @@ public class OrderService {
         return order;
     }
 
-    //  주문 총 금액 계산 메서드
+    // 주문 총 금액 계산 메서드
     private int calculateTotalPrice(OrderRequestDto orderRequestDto) {
         // 주문 총 금액 계산
         int totalPrice = 0;
@@ -164,7 +190,7 @@ public class OrderService {
         return totalPrice;
     }
 
-    //  주문 상세 내역 저장 메서드
+    // 주문 상세 내역 저장 메서드
     private List<OrderDetail> saveOrderDetails(OrderRequestDto orderRequestDto, Order order) {
         List<OrderDetail> orderDetails = orderRequestDto.getOrderDetails().stream()
                 .map(detailDto -> {

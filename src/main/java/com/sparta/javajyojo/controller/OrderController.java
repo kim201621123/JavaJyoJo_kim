@@ -93,7 +93,7 @@ public class OrderController {
         validateUser(userDetails);
         orderService.deleteOrder(userDetails.getUser(), orderId);
 
-        return ResponseEntity.ok().body("주문이 삭제되었습니다.");
+        return ResponseEntity.ok().body("주문이 취소되었습니다.");
     }
 
     private void validateUser(UserDetailsImpl userDetails) {
