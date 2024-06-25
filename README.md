@@ -16,13 +16,13 @@
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="equis3351"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/97023363-bc76-423a-ae1c-b93a1daec184
+      <td align="center"><a href="https://github.com/equis3351"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/97023363-bc76-423a-ae1c-b93a1daec184
 "" width="130px;" height="180;" alt=""/><br /><sub><b>팀장 : 남현 </b></sub></a><br />
-      <td align="center"><a href="gaeun7"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/9a4841cc-6c30-4a93-a8af-93bd7972cb8f
+      <td align="center"><a href="https://github.com/gaeun7"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/9a4841cc-6c30-4a93-a8af-93bd7972cb8f
 "" width="130px;" height="180;"  alt=""/><br /><sub><b>팀원 : 김가은 </b></sub></a><br />
-      <td align="center"><a href="kim201621123"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/6088ccd0-fefa-4b03-9e74-b50d5de072c1
+      <td align="center"><a href="https://github.com/kim201621123"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/6088ccd0-fefa-4b03-9e74-b50d5de072c1
 "" width="130px;" height="180;"  alt=""/><br /><sub><b>팀원 : 김현성 </b></sub></a><br />
-      <td align="center"><a href="Luel1197"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/4b5760a2-dd51-485a-8dd2-37a62d7e375b
+      <td align="center"><a href="https://github.com/Luel1197"><img src=https://github.com/equis3351/JavaJyoJo/assets/162283154/4b5760a2-dd51-485a-8dd2-37a62d7e375b
 "" width="130px;" height="180;" alt=""/><br /><sub><b>팀원 : 손아엘 </b></sub></a><br />
     </tr>
   </tbody>
