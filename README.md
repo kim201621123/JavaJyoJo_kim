@@ -35,6 +35,8 @@
     - 치킨과 떡볶이를 판매하는 자바죠조만의 가게인 치떡치떡 음식 주문 서비스
 ![치떡치떡_메뉴판](https://github.com/equis3351/JavaJyoJo/assets/162283154/d00debe0-9c8f-4ea1-93a3-767eb29be417)
 
+### ERD
+![Screenshot 2024-06-20 at 4 38 24 PM](https://github.com/equis3351/JavaJyoJo/assets/162283154/945d7c77-d85c-4c7d-a2c6-3be9cd469661)
 
 
 ## ⚒️ 기술 스택
