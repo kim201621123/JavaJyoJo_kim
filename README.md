@@ -28,6 +28,8 @@
   </tbody>
 </table>
 
+## ⚒️ 기술 스택
+<img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"> <img src="https://img.shields.io/badge/IntelliJ-000000?style=for-the-badge&logo=IntelliJ&logoColor=white"/> 
 
 ## 🗂️ 프로젝트 소개
 ### 프로젝트 명 - 치떡치떡
@@ -39,5 +41,3 @@
 ![Screenshot 2024-06-20 at 4 38 24 PM](https://github.com/equis3351/JavaJyoJo/assets/162283154/945d7c77-d85c-4c7d-a2c6-3be9cd469661)
 
 
-## ⚒️ 기술 스택
-<img src="https://img.shields.io/badge/JAVA-007396?style=for-the-badge&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"> <img src="https://img.shields.io/badge/IntelliJ-000000?style=for-the-badge&logo=IntelliJ&logoColor=white"/> 
