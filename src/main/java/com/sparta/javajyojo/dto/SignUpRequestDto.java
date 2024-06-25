@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class SignUpRequestDto {
     @NotBlank(message = "사용자 이름은 필수입니다.")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[0-9])[a-z0-9]+$",
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[0-9])[a-z0-9]{4,10}$",
             message = "최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9)")
     private String username;
 
