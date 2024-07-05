@@ -13,6 +13,9 @@ import com.sparta.javajyojo.repository.OrderRepository;
 import com.sparta.javajyojo.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,11 @@ public class ReviewService {
         );
     }
 
+    public Page<ReviewResponseDto> getReviews(User user, int page, int size) {
+        Page<Review> reviews = reviewRepository.findAllByUserId(user.getUserId(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return reviews.map(ReviewResponseDto::new);
+    }
+
     @Transactional
     public ReviewResponseDto updateReview(User user, Long reviewId, ReviewRequestDto requestDto) {
 
@@ -84,5 +92,6 @@ public class ReviewService {
     private boolean findReviewByOrderAndUserId(Order order, Long userId) {
         return reviewRepository.findReviewByOrderAndUserId(order, userId).isPresent();
     }
+
 
 }

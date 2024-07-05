@@ -6,6 +6,7 @@ import com.sparta.javajyojo.security.UserDetailsImpl;
 import com.sparta.javajyojo.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +35,16 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(new ReviewResponseDto(reviewService.getReviewById(reviewId)));
     }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<Page<ReviewResponseDto>> getReviews(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        return ResponseEntity.ok().body(reviewService.getReviews(userDetails.getUser(), page, size));
+    }
+
 
     @PutMapping("/reviews/{reviewId}")
     public ResponseEntity<ReviewResponseDto> updateReview(
